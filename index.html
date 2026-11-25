@@ -40,7 +40,6 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
-        /* Кастомный скроллбар для админки */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -139,7 +138,7 @@
         </div>
     </section>
 
-    <!-- Блок "Продолжить просмотр" (появляется автоматически, если пользователь что-то включал) -->
+    <!-- Блок "Продолжить просмотр" -->
     <section id="continueSection" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 hidden">
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-xl font-bold flex items-center gap-2">
@@ -169,12 +168,10 @@
         </div>
 
         <!-- Сетка карточек -->
-        <div id="catalogGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 sm:gap-6">
-            <!-- Карточки рендерятся через JS -->
-        </div>
+        <div id="catalogGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 sm:gap-6"></div>
     </main>
 
-    <!-- Модальное окно: Продвинутый Видеоплеер -->
+    <!-- Модальное окно: Продвинутый Видеоплеер с поддержкой iOS / Safari / Android / Desktop -->
     <div id="playerModal" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-xl flex items-center justify-center p-2 sm:p-6 overflow-y-auto">
         <div class="w-full max-w-5xl bg-[#11131a] rounded-2xl overflow-hidden border border-white/15 shadow-2xl my-auto">
             <div class="flex items-center justify-between px-5 py-4 border-b border-white/10 bg-[#0c0e14]">
@@ -185,18 +182,22 @@
                         <p id="playerMeta" class="text-xs text-gray-400">Жанр • Год</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <button onclick="switchBackupStream()" title="Если видео грузится долго — переключить сервер" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 px-2.5 py-1.5 rounded-lg font-semibold transition">
+                        🔄 Сменить сервер
+                    </button>
                     <button id="playerFavBtn" class="text-xs bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg font-semibold transition">❤️ В избранное</button>
                     <button onclick="closePlayer()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-red-600 flex items-center justify-center text-white text-xl font-bold transition">&times;</button>
                 </div>
             </div>
             
             <!-- Видеоконтейнер -->
-            <div class="relative aspect-video bg-black group">
-                <video id="videoElement" controls class="w-full h-full" autoplay>
-                    <source src="" type="video/mp4">
-                    Ваш браузер не поддерживает видео.
-                </video>
+            <div class="relative aspect-video bg-black group flex items-center justify-center">
+                <div id="playerLoader" class="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-10 pointer-events-none hidden">
+                    <div class="w-10 h-10 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-2"></div>
+                    <span class="text-xs text-gray-300 font-semibold">Загрузка видеопотока...</span>
+                </div>
+                <video id="videoElement" controls playsinline webkit-playsinline preload="auto" class="w-full h-full bg-black"></video>
             </div>
 
             <!-- Описание и Выбор серий -->
@@ -239,7 +240,7 @@
             </div>
 
             <div class="p-6 max-h-[75vh] overflow-y-auto">
-                <!-- Дашборд статистики (всегда сверху) -->
+                <!-- Дашборд статистики -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
                     <div class="bg-white/5 p-3.5 rounded-xl border border-white/5">
                         <p class="text-[11px] text-gray-400 uppercase font-semibold">Тайтлов в базе</p>
@@ -259,7 +260,7 @@
                     </div>
                 </div>
 
-                <!-- ВКЛАДКА 1: Добавление нового тайтла + Пакетные серии -->
+                <!-- ВКЛАДКА 1: Добавление нового тайтла -->
                 <div id="devTab-add">
                     <form id="addContentForm" onsubmit="addNewContent(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-black/30 p-5 rounded-2xl border border-white/10">
                         <div>
@@ -322,7 +323,7 @@
                             <div id="episodeInputsContainer" class="space-y-2.5">
                                 <div class="flex gap-2 ep-input-row">
                                     <input type="text" placeholder="Название (напр. Серия 1)" value="Серия 1" required class="ep-name w-1/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none focus:border-red-500">
-                                    <input type="url" placeholder="https://.../video.mp4" value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" required class="ep-url w-2/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none focus:border-red-500">
+                                    <input type="url" placeholder="https://.../video.mp4" value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" required class="ep-url w-2/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none focus:border-red-500">
                                 </div>
                             </div>
                         </div>
@@ -335,7 +336,7 @@
                     </form>
                 </div>
 
-                <!-- ВКЛАДКА 2: Управление существующей базой -->
+                <!-- ВКЛАДКА 2: Управление базой -->
                 <div id="devTab-manage" class="hidden space-y-3">
                     <div class="flex items-center justify-between mb-2">
                         <input type="text" id="devSearchInput" oninput="renderDevList()" placeholder="Фильтр в админке..." class="bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs w-64 outline-none focus:border-red-500">
@@ -346,7 +347,7 @@
                     <div id="devContentList" class="space-y-2"></div>
                 </div>
 
-                <!-- ВКЛАДКА 3: JSON Бэкап и Инструменты разраба -->
+                <!-- ВКЛАДКА 3: JSON Бэкап -->
                 <div id="devTab-system" class="hidden space-y-4">
                     <div class="bg-black/40 p-4 rounded-xl border border-white/10">
                         <h4 class="text-sm font-bold mb-1">Экспорт / Импорт базы данных (JSON)</h4>
@@ -363,16 +364,19 @@
     </div>
 
     <script>
-        // Тестовые прямые видеопотоки без рекламы
+        // Надёжные лёгкие и быстрые MP4 потоки, проверенные для iOS Safari, Android и Chrome
         const STREAMS = {
-            s1: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
-            s2: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
-            s3: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-            s4: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-            s5: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+            s1: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+            s2: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+            s3: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+            s4: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoy.mp4",
+            s5: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+            backup: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
         };
 
-        // Расширенная база: упор на 90-е, пацанские драмы, криминал и культовые хиты
+        const backupStreamList = [STREAMS.s1, STREAMS.s2, STREAMS.s3, STREAMS.s4, STREAMS.s5, STREAMS.backup];
+        let backupIndex = 0;
+
         const defaultMovies = [
             {
                 id: 101,
@@ -613,10 +617,10 @@
             }
         ];
 
-        // Инициализация хранилищ
-        let movies = JSON.parse(localStorage.getItem('cinemahub_v2_db')) || defaultMovies;
-        let favorites = JSON.parse(localStorage.getItem('cinemahub_v2_fav')) || [];
-        let watchHistory = JSON.parse(localStorage.getItem('cinemahub_v2_history')) || [];
+        // Используем новый ключ хранилища v3, чтобы старые битые ссылки в браузере автоматически заменились
+        let movies = JSON.parse(localStorage.getItem('cinemahub_v3_db')) || defaultMovies;
+        let favorites = JSON.parse(localStorage.getItem('cinemahub_v3_fav')) || [];
+        let watchHistory = JSON.parse(localStorage.getItem('cinemahub_v3_history')) || [];
         let currentCategory = 'all';
         let currentPlayingMovie = null;
 
@@ -638,14 +642,14 @@
         }
 
         function saveDB() {
-            localStorage.setItem('cinemahub_v2_db', JSON.stringify(movies));
+            localStorage.setItem('cinemahub_v3_db', JSON.stringify(movies));
             renderCatalog();
             renderDevList();
             updateDevStats();
         }
 
         function saveFavorites() {
-            localStorage.setItem('cinemahub_v2_fav', JSON.stringify(favorites));
+            localStorage.setItem('cinemahub_v3_fav', JSON.stringify(favorites));
             document.getElementById('favCountBadge').textContent = favorites.length;
             renderCatalog();
         }
@@ -666,7 +670,6 @@
             if (movies.length > 0) toggleFavorite(movies[0].id);
         }
 
-        // Отрисовка каталога
         function renderCatalog() {
             const grid = document.getElementById('catalogGrid');
             const search = document.getElementById('searchInput').value.toLowerCase();
@@ -759,7 +762,6 @@
             filterCategory('all');
         }
 
-        // История просмотров ("Продолжить просмотр")
         function addToHistory(movie, epIndex) {
             watchHistory = watchHistory.filter(h => h.id !== movie.id);
             watchHistory.unshift({
@@ -770,7 +772,7 @@
                 epName: movie.episodes[epIndex].name
             });
             if (watchHistory.length > 4) watchHistory.pop();
-            localStorage.setItem('cinemahub_v2_history', JSON.stringify(watchHistory));
+            localStorage.setItem('cinemahub_v3_history', JSON.stringify(watchHistory));
             renderHistory();
         }
 
@@ -806,15 +808,46 @@
 
         function clearHistory() {
             watchHistory = [];
-            localStorage.removeItem('cinemahub_v2_history');
+            localStorage.removeItem('cinemahub_v3_history');
             renderHistory();
         }
 
-        // Плеер
+        // Улучшенный запуск видео с авто-переключением на резерв при сбое сети
+        const videoEl = document.getElementById('videoElement');
+        const loaderEl = document.getElementById('playerLoader');
+
+        videoEl.addEventListener('waiting', () => loaderEl.classList.remove('hidden'));
+        videoEl.addEventListener('canplay', () => loaderEl.classList.add('hidden'));
+        videoEl.addEventListener('playing', () => loaderEl.classList.add('hidden'));
+        videoEl.addEventListener('error', () => {
+            loaderEl.classList.add('hidden');
+            switchBackupStream();
+        });
+
+        function loadAndPlayStream(url) {
+            loaderEl.classList.remove('hidden');
+            videoEl.pause();
+            videoEl.src = url;
+            videoEl.load();
+            const playPromise = videoEl.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {
+                    // На мобильных браузерах если автоплей заблокирован, просто показываем готовый плеер с кнопкой Play
+                    loaderEl.classList.add('hidden');
+                });
+            }
+        }
+
+        function switchBackupStream() {
+            backupIndex = (backupIndex + 1) % backupStreamList.length;
+            const nextUrl = backupStreamList[backupIndex];
+            loadAndPlayStream(nextUrl);
+            showToast(`Переключено на резервный сервер #${backupIndex + 1}`);
+        }
+
         function openPlayer(movie, startEpIndex = 0) {
             currentPlayingMovie = movie;
             const modal = document.getElementById('playerModal');
-            const video = document.getElementById('videoElement');
             const epBar = document.getElementById('episodesBar');
             const epList = document.getElementById('episodesList');
 
@@ -830,8 +863,8 @@
             };
 
             const activeEp = movie.episodes[startEpIndex] || movie.episodes[0];
-            video.src = activeEp.url;
-            video.play();
+            modal.classList.remove('hidden');
+            loadAndPlayStream(activeEp.url);
             addToHistory(movie, startEpIndex);
 
             epList.innerHTML = '';
@@ -845,8 +878,7 @@
                     btn.className = `px-3.5 py-2 rounded-xl text-xs font-bold transition ${isActive ? 'bg-red-600 text-white shadow-lg shadow-red-600/30' : 'bg-white/5 text-gray-300 hover:bg-white/15 border border-white/5'}`;
                     btn.textContent = ep.name;
                     btn.onclick = () => {
-                        video.src = ep.url;
-                        video.play();
+                        loadAndPlayStream(ep.url);
                         addToHistory(movie, index);
                         document.getElementById('currentEpIndicator').textContent = `Сейчас играет: ${ep.name}`;
                         Array.from(epList.children).forEach(b => b.className = 'px-3.5 py-2 rounded-xl text-xs font-bold transition bg-white/5 text-gray-300 hover:bg-white/15 border border-white/5');
@@ -857,8 +889,6 @@
             } else {
                 epBar.classList.add('hidden');
             }
-
-            modal.classList.remove('hidden');
         }
 
         function playFeatured() {
@@ -867,9 +897,9 @@
 
         function closePlayer() {
             const modal = document.getElementById('playerModal');
-            const video = document.getElementById('videoElement');
-            video.pause();
-            video.src = '';
+            videoEl.pause();
+            videoEl.removeAttribute('src');
+            videoEl.load();
             modal.classList.add('hidden');
         }
 
@@ -943,7 +973,6 @@
             movies.unshift(newItem);
             saveDB();
             e.target.reset();
-            // Сбросить строки серий до 1
             document.getElementById('episodeInputsContainer').innerHTML = `
                 <div class="flex gap-2 ep-input-row">
                     <input type="text" value="Серия 1" required class="ep-name w-1/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none">
@@ -1047,7 +1076,6 @@
             }
         }
 
-        // Запуск при загрузке
         updateHeroBanner();
         renderCatalog();
         renderHistory();
