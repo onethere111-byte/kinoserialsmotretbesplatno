@@ -1,153 +1,165 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CinemaHub — Бесплатный кинотеатр без рекламы</title>
-<script src="https://tailwindcss.com"></script>
-<style>
-body { background: #08090c; color: #fff; font-family: system-ui, -apple-system, sans-serif; }
-.glass { background: rgba(18, 20, 28, 0.88); backdrop-filter: blur(14px); }
-.no-scrollbar::-webkit-scrollbar { display: none; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CinemaHub — Бесплатный онлайн-кинотеатр без рекламы</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #08090c;
+      color: #ffffff;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    .glass {
+      background: rgba(14, 16, 22, 0.88);
+      backdrop-filter: blur(16px);
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Стилизация кастомного плеера */
+    video::-webkit-media-controls-panel {
+      background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+    }
+  </style>
 </head>
-<body class="antialiased">
-<div id="toast" class="fixed bottom-4 right-4 z-[100] bg-emerald-600 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-2xl hidden"></div>
+<body class="antialiased selection:bg-red-600 selection:text-white">
 
-<nav class="fixed top-0 w-full z-40 glass border-b border-white/10">
-<div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
-<a href="#" onclick="resetCat()" class="text-xl sm:text-2xl font-black tracking-tight text-red-600">CINEMA<span class="text-white">HUB</span></a>
-<div class="flex items-center gap-2">
-<input id="search" oninput="render()" placeholder="Поиск (Айда, 90-е...)" class="bg-white/10 border border-white/10 rounded-full px-3.5 py-1.5 text-xs sm:text-sm w-32 sm:w-56 outline-none focus:border-red-500">
-<a id="donateNav" href="#" target="_blank" onclick="trackMoneyClick(event)" class="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold px-3 py-2 rounded-xl">💎 Донат</a>
-<button onclick="openAuthOrPanel()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-lg shadow-red-600/30">🔐 DEV</button>
-</div>
-</div>
-</nav>
+  <!-- Всплывающие уведомления -->
+  <div id="toast" class="fixed bottom-5 right-5 z-[100] bg-emerald-600 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-2xl border border-emerald-400/30 hidden transition-all"></div>
 
-<header class="pt-16">
-<div class="relative h-[56vh] min-h-[380px] bg-zinc-950 overflow-hidden flex items-end">
-<img id="heroImg" src="" class="absolute inset-0 w-full h-full object-cover opacity-65">
-<div class="absolute inset-0 bg-gradient-to-t from-[#08090c] via-[#08090c]/60 to-transparent"></div>
-<div class="relative z-10 max-w-7xl mx-auto px-4 pb-8 w-full">
-<span class="bg-red-600 text-[10px] font-black uppercase px-2.5 py-1 rounded">ХИТ 2026 • 0% РЕКЛАМЫ</span>
-<h1 id="heroTitle" class="text-3xl sm:text-5xl font-black mt-2 mb-2">Айда!</h1>
-<p id="heroDesc" class="text-xs sm:text-sm text-gray-300 max-w-xl mb-5 line-clamp-2"></p>
-<button onclick="playHero()" class="bg-red-600 hover:bg-red-700 font-bold px-6 py-3 rounded-xl text-sm shadow-lg">▶ Смотреть бесплатно</button>
-</div>
-</div>
-</header>
+  <!-- Верхняя навигация -->
+  <nav class="fixed top-0 w-full z-40 glass border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
+      <a href="#" onclick="resetCat()" class="text-xl sm:text-2xl font-black tracking-tight text-red-600 flex items-center gap-1">
+        CINEMA<span class="text-white">HUB</span>
+      </a>
 
-<div class="max-w-7xl mx-auto px-4 pt-4 flex gap-2 overflow-x-auto no-scrollbar">
-<button onclick="setCat('all')" class="px-4 py-1.5 rounded-full text-xs font-bold bg-red-600 whitespace-nowrap">Все</button>
-<button onclick="setCat('90-е и Улица')" class="px-4 py-1.5 rounded-full text-xs font-bold bg-white/10 text-amber-400 whitespace-nowrap">🔥 90-е и Пацанские</button>
-<button onclick="setCat('Криминал')" class="px-4 py-1.5 rounded-full text-xs font-bold bg-white/10 whitespace-nowrap">🔫 Криминал</button>
-<button onclick="setCat('Сериал')" class="px-4 py-1.5 rounded-full text-xs font-bold bg-white/10 whitespace-nowrap">📺 Сериалы</button>
-<button onclick="setCat('Фильм')" class="px-4 py-1.5 rounded-full text-xs font-bold bg-white/10 whitespace-nowrap">🎬 Фильмы</button>
-</div>
+      <div class="flex items-center gap-2 sm:gap-3">
+        <div class="relative">
+          <input id="search" oninput="render()" placeholder="Поиск фильмов..." class="bg-white/10 border border-white/10 rounded-full px-4 py-1.5 text-xs sm:text-sm w-36 sm:w-64 outline-none focus:border-red-500 focus:bg-white/15 transition">
+        </div>
 
-<div id="promoBanner" class="max-w-7xl mx-auto px-4 pt-5 hidden">
-<div class="bg-gradient-to-r from-amber-500/15 to-red-600/15 border border-amber-500/30 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
-<div>
-<p id="promoTitle" class="text-sm font-extrabold text-amber-400"></p>
-<p id="promoSub" class="text-xs text-gray-300"></p>
-</div>
-<a id="promoLink" href="#" target="_blank" onclick="trackMoneyClick()" class="bg-amber-500 text-black font-extrabold text-xs px-4 py-2 rounded-xl">Перейти →</a>
-</div>
-</div>
+        <a id="donateNav" href="https://donationalerts.com" target="_blank" onclick="trackMoneyClick()" class="bg-amber-500/15 hover:bg-amber-500/25 text-amber-400 border border-amber-500/30 text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5">
+          <span>💎</span>
+          <span id="donateBtnText">Донат</span>
+        </a>
 
-<main class="max-w-7xl mx-auto px-4 py-6">
-<div class="flex justify-between items-center mb-4">
-<h2 id="catHeader" class="text-xl font-extrabold">Каталог кинотеатра</h2>
-<span id="countBadge" class="text-xs text-gray-400"></span>
-</div>
-<div id="grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
-</main>
+        <button onclick="openAuthOrPanel()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-lg shadow-red-600/25 transition flex items-center gap-1.5">
+          <span>🔐</span>
+          <span class="hidden sm:inline">DEV STUDIO</span>
+        </button>
+      </div>
+    </div>
+  </nav>
 
-<div id="playerModal" class="fixed inset-0 z-50 hidden bg-black/95 flex items-center justify-center p-3">
-<div class="w-full max-w-4xl bg-[#11131a] rounded-2xl border border-white/15 overflow-hidden">
-<div class="flex justify-between items-center px-4 py-3 border-b border-white/10">
-<div>
-<h3 id="pTitle" class="font-bold text-sm sm:text-base"></h3>
-<p id="pMeta" class="text-xs text-gray-400"></p>
-</div>
-<button onclick="closePlayer()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-red-600 text-xl font-bold">&times;</button>
-</div>
-<div class="aspect-video bg-black relative flex items-center justify-center">
-<video id="mp4Player" controls playsinline class="w-full h-full hidden"></video>
-<div id="ytBox" class="w-full h-full relative hidden">
-<img id="ytThumb" class="w-full h-full object-cover opacity-70">
-<div class="absolute inset-0 flex flex-col items-center justify-center bg-black/40 p-4 text-center">
-<a id="ytBtn" href="#" target="_blank" class="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center text-2xl shadow-2xl mb-3">▶</a>
-<span id="ytLabel" class="bg-black/80 px-4 py-2 rounded-xl text-xs font-bold border border-white/15">Смотреть в HD</span>
-</div>
-</div>
-</div>
-<div class="p-4 space-y-3">
-<p id="pDesc" class="text-xs text-gray-300"></p>
-<div id="epList" class="flex flex-wrap gap-2"></div>
-</div>
-</div>
-</div>
+  <!-- Главный баннер (Hero) -->
+  <header class="pt-16">
+    <div class="relative h-[58vh] min-h-[420px] bg-zinc-950 overflow-hidden flex items-end">
+      <img id="heroImg" src="" alt="Постер" class="absolute inset-0 w-full h-full object-cover opacity-55 transition-all duration-700">
+      <div class="absolute inset-0 bg-gradient-to-t from-[#08090c] via-[#08090c]/50 to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-[#08090c]/90 via-transparent to-transparent"></div>
 
-<div id="loginModal" class="fixed inset-0 z-50 hidden bg-black/90 flex items-center justify-center p-4">
-<div class="w-full max-w-sm bg-[#12141c] rounded-2xl border border-white/15 p-6 space-y-4">
-<div class="flex justify-between items-center">
-<h3 class="font-black text-lg text-red-500">🔐 Вход в DEV STUDIO</h3>
-<button onclick="document.getElementById('loginModal').classList.add('hidden')" class="text-gray-400 text-xl">&times;</button>
-</div>
-<p class="text-xs text-gray-400">Введи пароль Владельца или ключ доступа Админа / Модератора.</p>
-<input type="password" id="passInput" placeholder="Пароль доступа..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-red-500">
-<button onclick="loginAttempt()" class="w-full bg-red-600 hover:bg-red-700 font-bold py-2.5 rounded-xl text-sm">Войти в панель</button>
-<p class="text-[11px] text-gray-500 text-center">Стандартный пароль владельца: <b class="text-gray-300">boss777</b></p>
-</div>
-</div>
+      <div class="relative z-10 max-w-7xl mx-auto px-4 pb-10 w-full">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="bg-red-600 text-[10px] font-black uppercase px-2.5 py-1 rounded tracking-wider">ХИТ СЕЗОНА</span>
+          <span class="bg-white/10 backdrop-blur-md text-[10px] font-bold uppercase px-2.5 py-1 rounded text-gray-200">Full HD • Свой плеер</span>
+        </div>
+        <h1 id="heroTitle" class="text-3xl sm:text-5xl font-black mb-3 tracking-tight">Загрузка...</h1>
+        <p id="heroDesc" class="text-xs sm:text-sm text-gray-300 max-w-xl mb-6 line-clamp-3 leading-relaxed"></p>
+        <div class="flex flex-wrap gap-3">
+          <button onclick="playHero()" class="bg-red-600 hover:bg-red-700 font-bold px-7 py-3.5 rounded-xl text-sm shadow-lg shadow-red-600/30 transition flex items-center gap-2">
+            <span>▶</span> Смотреть онлайн
+          </button>
+          <a id="heroDonateBtn" href="https://donationalerts.com" target="_blank" onclick="trackMoneyClick()" class="bg-white/10 hover:bg-white/20 backdrop-blur-md font-bold px-5 py-3.5 rounded-xl text-sm border border-white/10 transition">
+            💎 Поддержать проект
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
 
-<div id="devModal" class="fixed inset-0 z-50 hidden bg-black/95 overflow-y-auto p-3">
-<div class="max-w-4xl mx-auto bg-[#12141c] rounded-2xl border border-white/15 p-5 my-4 space-y-5">
-<div class="flex flex-wrap justify-between items-center border-b border-white/10 pb-3 gap-2">
-<div>
-<h2 class="font-black text-lg flex items-center gap-2">⚙️ DEV STUDIO <span id="roleBadge" class="text-[10px] bg-red-600 px-2 py-0.5 rounded uppercase">OWNER</span></h2>
-<p id="roleHint" class="text-xs text-gray-400"></p>
-</div>
-<div class="flex gap-2">
-<button onclick="logoutDev()" class="text-xs bg-white/10 px-3 py-1.5 rounded-lg">Выйти</button>
-<button onclick="document.getElementById('devModal').classList.add('hidden')" class="w-8 h-8 bg-red-600 rounded-lg font-bold">&times;</button>
-</div>
-</div>
+  <!-- Категории -->
+  <div class="max-w-7xl mx-auto px-4 pt-5 flex gap-2 overflow-x-auto no-scrollbar" id="catBar">
+    <button onclick="setCat('all', this)" class="cat-btn px-4 py-2 rounded-full text-xs font-bold bg-red-600 text-white whitespace-nowrap transition">Все новинки</button>
+    <button onclick="setCat('90-е и Улица', this)" class="cat-btn px-4 py-2 rounded-full text-xs font-bold bg-white/10 hover:bg-white/15 text-amber-400 whitespace-nowrap transition">🔥 90-е и Пацанские</button>
+    <button onclick="setCat('Криминал', this)" class="cat-btn px-4 py-2 rounded-full text-xs font-bold bg-white/10 hover:bg-white/15 whitespace-nowrap transition">🔫 Криминал и Боевики</button>
+    <button onclick="setCat('Фантастика', this)" class="cat-btn px-4 py-2 rounded-full text-xs font-bold bg-white/10 hover:bg-white/15 whitespace-nowrap transition">🚀 Фантастика</button>
+    <button onclick="setCat('Сериал', this)" class="cat-btn px-4 py-2 rounded-full text-xs font-bold bg-white/10 hover:bg-white/15 whitespace-nowrap transition">📺 Все сериалы</button>
+    <button onclick="setCat('Фильм', this)" class="cat-btn px-4 py-2 rounded-full text-xs font-bold bg-white/10 hover:bg-white/15 whitespace-nowrap transition">🎬 Все фильмы</button>
+  </div>
 
-<div class="flex gap-2 overflow-x-auto no-scrollbar text-xs font-bold">
-<button onclick="showTab('add')" class="px-3.5 py-2 rounded-lg bg-red-600">➕ Добавить контент</button>
-<button onclick="showTab('list')" class="px-3.5 py-2 rounded-lg bg-white/10">🎬 База (<span id="dbCount">0</span>)</button>
-<button id="tabStaffBtn" onclick="showTab('staff')" class="px-3.5 py-2 rounded-lg bg-white/10">👑 Админы и Модеры</button>
-<button id="tabMoneyBtn" onclick="showTab('money')" class="px-3.5 py-2 rounded-lg bg-amber-500/20 text-amber-400">💰 Вывод и Бабки</button>
-</div>
+  <!-- Промо / Донат плашка (настраивается из DEV STUDIO) -->
+  <div id="promoBanner" class="max-w-7xl mx-auto px-4 pt-6">
+    <div class="bg-gradient-to-r from-amber-500/15 via-red-600/10 to-purple-600/15 border border-amber-500/30 rounded-2xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
+      <div class="space-y-1">
+        <div class="flex items-center gap-2">
+          <span class="text-xs bg-amber-500 text-black font-black px-2 py-0.5 rounded uppercase">ПОДДЕРЖКА</span>
+          <p id="promoTitle" class="text-sm sm:text-base font-extrabold text-amber-400">Нравится смотреть без рекламы? Закинь на развитие сервера!</p>
+        </div>
+        <p id="promoSub" class="text-xs text-gray-300">Все средства идут на покупку новых серверов и добавление новинок в 1080p.</p>
+      </div>
+      <a id="promoLink" href="https://donationalerts.com" target="_blank" onclick="trackMoneyClick()" class="bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-lg shadow-amber-500/20 transition whitespace-nowrap">
+        Задонатить →
+      </a>
+    </div>
+  </div>
 
-<form id="tab-add" onsubmit="addMovie(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-black/30 p-4 rounded-xl">
-<input id="mTitle" required placeholder="Название (напр. Айда! 2 сезон)" class="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs">
-<select id="mType" class="bg-[#1a1d28] border border-white/10 rounded-lg px-3 py-2 text-xs">
-<option value="Сериал">Сериал</option>
-<option value="Фильм">Фильм</option>
-</select>
-<select id="mCat" class="bg-[#1a1d28] border border-white/10 rounded-lg px-3 py-2 text-xs">
-<option value="90-е и Улица">🔥 90-е и Улица</option>
-<option value="Криминал">🔫 Криминал</option>
-</select>
-<input id="mMeta" required placeholder="2026 • Драма, Криминал" class="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs">
-<input id="mEpName" required value="1 серия" placeholder="Название серии" class="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs">
-<input id="mUrl" required type="url" placeholder="Ссылка на YouTube или .mp4" class="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs">
-<textarea id="mDesc" placeholder="Описание..." class="sm:col-span-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs"></textarea>
-<button type="submit" class="sm:col-span-2 bg-red-600 font-bold py-2.5 rounded-xl text-xs">🚀 Опубликовать</button>
-</form>
+  <!-- Сетка фильмов -->
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-5">
+      <h2 id="catHeader" class="text-xl sm:text-2xl font-extrabold tracking-tight">Каталог кинотеатра</h2>
+      <span id="countBadge" class="text-xs text-gray-400 bg-white/5 px-3 py-1 rounded-full"></span>
+    </div>
+    <div id="grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5"></div>
+  </main>
 
-<div id="tab-list" class="hidden space-y-2">
-<button onclick="hardReset()" class="text-xs bg-red-950 text-red-300 px-3 py-1.5 rounded-lg border border-red-500/30">♻️ Сбросить базу к стандартной</button>
-<div id="adminList" class="space-y-2 max-h-80 overflow-y-auto"></div>
-</div>
+  <!-- Футер -->
+  <footer class="border-t border-white/10 py-8 mt-10 text-center text-xs text-gray-500">
+    <p class="font-bold text-gray-400 mb-1">CINEMAHUB © 2026 — Твой личный онлайн-кинотеатр</p>
+    <p>Все видео воспроизводятся во встроенном плеере без сторонних всплывающих окон.</p>
+  </footer>
 
-<div id="tab-staff" class="hidden space-y-4">
-<div class="bg-black/30 p-4 rounded-xl border border-white/10 space-y-3">
-<h4 class="text-xs font-bold uppercase text-amber-400">Выдать доступ сотруднику (Админ / Модератор)</h4>
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-<input id="staffName" placeholder="Никнейм (напр. Саня_Модер)" class="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs">
-<select id="staffRole" class="bg-[#1a1d28] border border-white/10 rounded-lg px-3 py-2 text-xs">
+  <!-- ВСТРОЕННЫЙ ВИДЕОПЛЕЕР (МОДАЛЬНОЕ ОКНО) -->
+  <div id="playerModal" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+    <div class="w-full max-w-5xl bg-[#11131a] rounded-2xl border border-white/15 overflow-hidden shadow-2xl my-auto">
+      
+      <!-- Шапка плеера -->
+      <div class="flex justify-between items-center px-4 sm:px-6 py-3.5 border-b border-white/10 bg-[#161922]">
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 id="pTitle" class="font-bold text-sm sm:text-lg text-white"></h3>
+            <span id="pEpBadge" class="text-[11px] bg-red-600 px-2 py-0.5 rounded font-bold"></span>
+          </div>
+          <p id="pMeta" class="text-xs text-gray-400 mt-0.5"></p>
+        </div>
+        <button onclick="closePlayer()" class="w-9 h-9 rounded-xl bg-white/10 hover:bg-red-600 text-xl font-bold transition flex items-center justify-center">&times;</button>
+      </div>
+
+      <!-- Экран плеера -->
+      <div class="aspect-video bg-black relative flex items-center justify-center w-full">
+        <!-- Нативный HTML5 видеоплеер для .mp4 / .webm -->
+        <video id="nativePlayer" controls playsinline class="w-full h-full hidden outline-none"></video>
+        
+        <!-- Встроенный iframe-плеер для YouTube, VK Video, RuTube и др. -->
+        <iframe id="embedPlayer" class="w-full h-full hidden border-0" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>
+
+        <!-- Заглушка, если ссылка не распознана -->
+        <div id="fallbackPlayer" class="hidden flex-col items-center justify-center p-6 text-center space-y-3">
+          <p class="text-sm text-gray-300">Этот источник требует открытия в защищенном окне:</p>
+          <a id="fallbackLink" href="#" target="_blank" class="bg-red-600 hover:bg-red-700 px-6 py-3 rounded-xl text-xs font-bold">▶ Открыть видеопоток</a>
+        </div>
+      </div>
+
+      <!-- Нижняя панель плеера: выбор серий, скорости и описания -->
+      <div class="p-4 sm:p-6 space-y-4 bg-[#11131a]">
+        
+        <!-- Панель управления плеером -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-white/10">
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-gray-400">Скорость (для MP4):</span>
