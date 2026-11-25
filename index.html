@@ -13,6 +13,7 @@ body { background: #08090c; color: #fff; font-family: system-ui, -apple-system, 
 </head>
 <body class="antialiased">
 <div id="toast" class="fixed bottom-4 right-4 z-[100] bg-emerald-600 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-2xl hidden"></div>
+
 <nav class="fixed top-0 w-full z-40 glass border-b border-white/10">
 <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
 <a href="#" onclick="resetCat()" class="text-xl sm:text-2xl font-black tracking-tight text-red-600">CINEMA<span class="text-white">HUB</span></a>
@@ -23,6 +24,7 @@ body { background: #08090c; color: #fff; font-family: system-ui, -apple-system, 
 </div>
 </div>
 </nav>
+
 <header class="pt-16">
 <div class="relative h-[56vh] min-h-[380px] bg-zinc-950 overflow-hidden flex items-end">
 <img id="heroImg" src="" class="absolute inset-0 w-full h-full object-cover opacity-65">
@@ -31,10 +33,11 @@ body { background: #08090c; color: #fff; font-family: system-ui, -apple-system, 
 <span class="bg-red-600 text-[10px] font-black uppercase px-2.5 py-1 rounded">ХИТ 2026 • 0% РЕКЛАМЫ</span>
 <h1 id="heroTitle" class="text-3xl sm:text-5xl font-black mt-2 mb-2">Айда!</h1>
 <p id="heroDesc" class="text-xs sm:text-sm text-gray-300 max-w-xl mb-5 line-clamp-2"></p>
-<button onclick="openPlayer(db[0])" class="bg-red-600 hover:bg-red-700 font-bold px-6 py-3 rounded-xl text-sm shadow-lg">▶ Смотреть бесплатно</button>
+<button onclick="playHero()" class="bg-red-600 hover:bg-red-700 font-bold px-6 py-3 rounded-xl text-sm shadow-lg">▶ Смотреть бесплатно</button>
 </div>
 </div>
 </header>
+
 <div class="max-w-7xl mx-auto px-4 pt-4 flex gap-2 overflow-x-auto no-scrollbar">
 <button onclick="setCat('all')" class="px-4 py-1.5 rounded-full text-xs font-bold bg-red-600 whitespace-nowrap">Все</button>
 <button onclick="setCat('90-е и Улица')" class="px-4 py-1.5 rounded-full text-xs font-bold bg-white/10 text-amber-400 whitespace-nowrap">🔥 90-е и Пацанские</button>
@@ -42,6 +45,7 @@ body { background: #08090c; color: #fff; font-family: system-ui, -apple-system, 
 <button onclick="setCat('Сериал')" class="px-4 py-1.5 rounded-full text-xs font-bold bg-white/10 whitespace-nowrap">📺 Сериалы</button>
 <button onclick="setCat('Фильм')" class="px-4 py-1.5 rounded-full text-xs font-bold bg-white/10 whitespace-nowrap">🎬 Фильмы</button>
 </div>
+
 <div id="promoBanner" class="max-w-7xl mx-auto px-4 pt-5 hidden">
 <div class="bg-gradient-to-r from-amber-500/15 to-red-600/15 border border-amber-500/30 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
 <div>
@@ -51,6 +55,7 @@ body { background: #08090c; color: #fff; font-family: system-ui, -apple-system, 
 <a id="promoLink" href="#" target="_blank" onclick="trackMoneyClick()" class="bg-amber-500 text-black font-extrabold text-xs px-4 py-2 rounded-xl">Перейти →</a>
 </div>
 </div>
+
 <main class="max-w-7xl mx-auto px-4 py-6">
 <div class="flex justify-between items-center mb-4">
 <h2 id="catHeader" class="text-xl font-extrabold">Каталог кинотеатра</h2>
@@ -58,6 +63,7 @@ body { background: #08090c; color: #fff; font-family: system-ui, -apple-system, 
 </div>
 <div id="grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
 </main>
+
 <div id="playerModal" class="fixed inset-0 z-50 hidden bg-black/95 flex items-center justify-center p-3">
 <div class="w-full max-w-4xl bg-[#11131a] rounded-2xl border border-white/15 overflow-hidden">
 <div class="flex justify-between items-center px-4 py-3 border-b border-white/10">
@@ -83,6 +89,7 @@ body { background: #08090c; color: #fff; font-family: system-ui, -apple-system, 
 </div>
 </div>
 </div>
+
 <div id="loginModal" class="fixed inset-0 z-50 hidden bg-black/90 flex items-center justify-center p-4">
 <div class="w-full max-w-sm bg-[#12141c] rounded-2xl border border-white/15 p-6 space-y-4">
 <div class="flex justify-between items-center">
@@ -92,9 +99,10 @@ body { background: #08090c; color: #fff; font-family: system-ui, -apple-system, 
 <p class="text-xs text-gray-400">Введи пароль Владельца или ключ доступа Админа / Модератора.</p>
 <input type="password" id="passInput" placeholder="Пароль доступа..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-red-500">
 <button onclick="loginAttempt()" class="w-full bg-red-600 hover:bg-red-700 font-bold py-2.5 rounded-xl text-sm">Войти в панель</button>
-<p class="text-[11px] text-gray-500 text-center">Стандартный пароль владельца: <b class="text-gray-300">boss777</b> (можно сменить внутри)</p>
+<p class="text-[11px] text-gray-500 text-center">Стандартный пароль владельца: <b class="text-gray-300">boss777</b></p>
 </div>
 </div>
+
 <div id="devModal" class="fixed inset-0 z-50 hidden bg-black/95 overflow-y-auto p-3">
 <div class="max-w-4xl mx-auto bg-[#12141c] rounded-2xl border border-white/15 p-5 my-4 space-y-5">
 <div class="flex flex-wrap justify-between items-center border-b border-white/10 pb-3 gap-2">
@@ -107,12 +115,14 @@ body { background: #08090c; color: #fff; font-family: system-ui, -apple-system, 
 <button onclick="document.getElementById('devModal').classList.add('hidden')" class="w-8 h-8 bg-red-600 rounded-lg font-bold">&times;</button>
 </div>
 </div>
+
 <div class="flex gap-2 overflow-x-auto no-scrollbar text-xs font-bold">
 <button onclick="showTab('add')" class="px-3.5 py-2 rounded-lg bg-red-600">➕ Добавить контент</button>
 <button onclick="showTab('list')" class="px-3.5 py-2 rounded-lg bg-white/10">🎬 База (<span id="dbCount">0</span>)</button>
 <button id="tabStaffBtn" onclick="showTab('staff')" class="px-3.5 py-2 rounded-lg bg-white/10">👑 Админы и Модеры</button>
 <button id="tabMoneyBtn" onclick="showTab('money')" class="px-3.5 py-2 rounded-lg bg-amber-500/20 text-amber-400">💰 Вывод и Бабки</button>
 </div>
+
 <form id="tab-add" onsubmit="addMovie(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-black/30 p-4 rounded-xl">
 <input id="mTitle" required placeholder="Название (напр. Айда! 2 сезон)" class="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs">
 <select id="mType" class="bg-[#1a1d28] border border-white/10 rounded-lg px-3 py-2 text-xs">
@@ -129,10 +139,12 @@ body { background: #08090c; color: #fff; font-family: system-ui, -apple-system, 
 <textarea id="mDesc" placeholder="Описание..." class="sm:col-span-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs"></textarea>
 <button type="submit" class="sm:col-span-2 bg-red-600 font-bold py-2.5 rounded-xl text-xs">🚀 Опубликовать</button>
 </form>
+
 <div id="tab-list" class="hidden space-y-2">
 <button onclick="hardReset()" class="text-xs bg-red-950 text-red-300 px-3 py-1.5 rounded-lg border border-red-500/30">♻️ Сбросить базу к стандартной</button>
 <div id="adminList" class="space-y-2 max-h-80 overflow-y-auto"></div>
 </div>
+
 <div id="tab-staff" class="hidden space-y-4">
 <div class="bg-black/30 p-4 rounded-xl border border-white/10 space-y-3">
 <h4 class="text-xs font-bold uppercase text-amber-400">Выдать доступ сотруднику (Админ / Модератор)</h4>
