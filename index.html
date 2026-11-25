@@ -19,7 +19,7 @@
             overflow-x: hidden;
         }
         .glass {
-            background: rgba(18, 20, 28, 0.78);
+            background: rgba(18, 20, 28, 0.85);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
         }
@@ -28,7 +28,7 @@
         }
         .movie-card:hover {
             transform: translateY(-6px) scale(1.02);
-            box-shadow: 0 20px 35px -10px rgba(229, 9, 20, 0.25);
+            box-shadow: 0 20px 35px -10px rgba(229, 9, 20, 0.35);
         }
         .movie-card:hover .play-overlay {
             opacity: 1;
@@ -78,12 +78,18 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2.5 sm:gap-3">
                 <div class="relative">
-                    <input type="text" id="searchInput" oninput="renderCatalog()" placeholder="Поиск по названию, актёрам, году..." 
-                        class="bg-white/5 border border-white/10 rounded-full pl-9 pr-4 py-1.5 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-red-500 focus:bg-white/10 w-40 sm:w-64 transition">
+                    <input type="text" id="searchInput" oninput="renderCatalog()" placeholder="Поиск по названию, году..." 
+                        class="bg-white/5 border border-white/10 rounded-full pl-9 pr-4 py-1.5 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-red-500 focus:bg-white/10 w-36 sm:w-64 transition">
                     <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
+
+                <!-- Кнопка доната (включается/настраивается в DEV STUDIO) -->
+                <a id="navDonateBtn" href="#donate" target="_blank" rel="noopener noreferrer" onclick="handleDonateClick(event)"
+                    class="hidden sm:flex items-center gap-1.5 bg-amber-500/15 hover:bg-amber-500/25 text-amber-400 border border-amber-500/30 text-xs font-bold px-3 py-2 rounded-xl transition">
+                    <span>💎 Поддержать</span>
+                </a>
                 
                 <button onclick="toggleDevPanel()" 
                     class="bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white text-xs sm:text-sm font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-2 shadow-lg shadow-red-600/30 border border-red-400/20">
@@ -96,26 +102,25 @@
 
     <!-- Главный баннер (Hero) -->
     <header class="relative pt-16">
-        <div class="relative h-[68vh] min-h-[460px] w-full overflow-hidden">
-            <img id="heroBg" src="https://images.unsplash.com/photo-1657360952614-0f821bd8a873?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D" 
-                alt="Hero" class="w-full h-full object-cover opacity-50 scale-105 transition-all duration-1000">
+        <div class="relative h-[68vh] min-h-[460px] w-full overflow-hidden bg-zinc-950">
+            <img id="heroBg" src="" alt="Hero" class="w-full h-full object-cover opacity-65 transition-all duration-700">
             <div class="absolute inset-0 bg-gradient-to-t from-[#08090c] via-[#08090c]/55 to-black/30"></div>
-            <div class="absolute inset-0 bg-gradient-to-r from-[#08090c] via-[#08090c]/60 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-[#08090c] via-[#08090c]/65 to-transparent"></div>
             
             <div class="absolute bottom-10 left-0 w-full">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex flex-wrap items-center gap-2 mb-3">
-                        <span class="bg-red-600 text-xs font-extrabold uppercase px-2.5 py-1 rounded tracking-wider">ХИТ СЕЗОНА</span>
-                        <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold px-2.5 py-1 rounded">0% РЕКЛАМЫ • FULL HD / 4K</span>
-                        <span id="heroRatingBadge" class="bg-white/10 text-amber-400 text-xs font-bold px-2.5 py-1 rounded">★ 9.5</span>
+                        <span class="bg-red-600 text-xs font-extrabold uppercase px-2.5 py-1 rounded tracking-wider">ПРЕМЬЕРА 2026</span>
+                        <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold px-2.5 py-1 rounded">0% РЕКЛАМЫ • FULL HD</span>
+                        <span id="heroRatingBadge" class="bg-white/10 text-amber-400 text-xs font-bold px-2.5 py-1 rounded">★ 9.4</span>
                     </div>
-                    <h1 id="heroTitle" class="text-4xl sm:text-6xl font-black tracking-tight mb-3 max-w-3xl leading-tight">Слово Пацана: Кровь на Асфальте</h1>
+                    <h1 id="heroTitle" class="text-4xl sm:text-6xl font-black tracking-tight mb-3 max-w-3xl leading-tight">Айда!</h1>
                     <p id="heroDesc" class="text-gray-300 max-w-2xl text-sm sm:text-base mb-6 line-clamp-3 leading-relaxed">
-                        Конец 1980-х. Пока родители борются за выживание в эпоху перемен, уличные группировки делят асфальт. История о братстве, цене данного слова и жестоких законах двора.
+                        Гриша переезжает из Волгограда в Казань и оказывается в эпицентре войны уличных банд. Чтобы выжить, ему придётся принять жёсткие законы улицы и доказать, что он не чушпан.
                     </p>
                     <div class="flex flex-wrap items-center gap-4">
                         <button onclick="playFeatured()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-7 py-3.5 rounded-xl transition flex items-center gap-2.5 shadow-xl shadow-red-600/30">
-                            <span class="text-lg">▶</span> Смотреть 1 серию бесплатно
+                            <span class="text-lg">▶</span> Смотреть бесплатно
                         </button>
                         <button onclick="toggleFeaturedFav()" class="glass hover:bg-white/15 text-white font-semibold px-5 py-3.5 rounded-xl border border-white/15 transition flex items-center gap-2">
                             <span>+ В избранное</span>
@@ -135,6 +140,25 @@
             <button onclick="filterCategory('Сериал')" class="tag-pill px-4 py-2 rounded-full text-xs font-bold bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 whitespace-nowrap transition">📺 Все сериалы</button>
             <button onclick="filterCategory('Фильм')" class="tag-pill px-4 py-2 rounded-full text-xs font-bold bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 whitespace-nowrap transition">🎬 Полнометражные фильмы</button>
             <button onclick="filterCategory('favorites')" class="tag-pill px-4 py-2 rounded-full text-xs font-bold bg-white/5 hover:bg-white/10 text-pink-400 border border-pink-400/20 whitespace-nowrap transition">❤️ Моё избранное</button>
+        </div>
+    </section>
+
+    <!-- Нативный рекламный / партнёрский слот владельца (управляется из DEV STUDIO -> Монетизация) -->
+    <section id="monetizationSlot" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 hidden">
+        <div class="bg-gradient-to-r from-[#161924] via-[#1d1418] to-[#161924] border border-amber-500/25 rounded-2xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 shadow-xl">
+            <div class="flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-xl">🔥</div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-black uppercase bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded">Партнёрский блок</span>
+                        <h3 id="promoSlotTitle" class="text-sm sm:text-base font-extrabold text-white">Смотри эксклюзивы и новинки 2026</h3>
+                    </div>
+                    <p id="promoSlotDesc" class="text-xs text-gray-400 mt-0.5">Подпишись на наш Telegram-канал, чтобы не пропустить выход новых серий!</p>
+                </div>
+            </div>
+            <a id="promoSlotBtn" href="#" target="_blank" rel="noopener noreferrer" class="bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs px-5 py-2.5 rounded-xl transition whitespace-nowrap">
+                Перейти →
+            </a>
         </div>
     </section>
 
@@ -171,10 +195,10 @@
         <div id="catalogGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 sm:gap-6"></div>
     </main>
 
-    <!-- Модальное окно: Продвинутый Видеоплеер с поддержкой iOS / Safari / Android / Desktop -->
+    <!-- Модальное окно: Универсальный Видеоплеер -->
     <div id="playerModal" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-xl flex items-center justify-center p-2 sm:p-6 overflow-y-auto">
         <div class="w-full max-w-5xl bg-[#11131a] rounded-2xl overflow-hidden border border-white/15 shadow-2xl my-auto">
-            <div class="flex items-center justify-between px-5 py-4 border-b border-white/10 bg-[#0c0e14]">
+            <div class="flex flex-wrap items-center justify-between px-5 py-4 border-b border-white/10 bg-[#0c0e14] gap-2">
                 <div class="flex items-center gap-3">
                     <span class="bg-red-600 text-[10px] font-black px-2 py-0.5 rounded uppercase">Без рекламы</span>
                     <div>
@@ -183,21 +207,34 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <button onclick="switchBackupStream()" title="Если видео грузится долго — переключить сервер" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 px-2.5 py-1.5 rounded-lg font-semibold transition">
-                        🔄 Сменить сервер
-                    </button>
+                    <a id="externalWatchBtn" href="#" target="_blank" rel="noopener noreferrer" class="text-xs bg-white/10 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5">
+                        <span>↗ Открыть в полном окне</span>
+                    </a>
                     <button id="playerFavBtn" class="text-xs bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg font-semibold transition">❤️ В избранное</button>
                     <button onclick="closePlayer()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-red-600 flex items-center justify-center text-white text-xl font-bold transition">&times;</button>
                 </div>
             </div>
             
             <!-- Видеоконтейнер -->
-            <div class="relative aspect-video bg-black group flex items-center justify-center">
-                <div id="playerLoader" class="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-10 pointer-events-none hidden">
-                    <div class="w-10 h-10 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-2"></div>
-                    <span class="text-xs text-gray-300 font-semibold">Загрузка видеопотока...</span>
+            <div class="relative aspect-video bg-black flex items-center justify-center overflow-hidden">
+                <!-- HTML5 MP4 Плеер -->
+                <video id="videoElement" controls playsinline webkit-playsinline preload="auto" class="w-full h-full bg-black hidden"></video>
+                
+                <!-- YouTube Плеер (HD превью + прямой запуск в YouTube без блокировок) -->
+                <div id="ytPlayerContainer" class="w-full h-full relative hidden flex items-center justify-center bg-black">
+                    <img id="ytPreviewBg" src="" alt="Превью видео" class="w-full h-full object-cover opacity-70">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/35 flex flex-col items-center justify-center p-6 text-center">
+                        <a id="ytWatchLink" href="#" target="_blank" rel="noopener noreferrer" class="group flex flex-col items-center gap-4">
+                            <div class="w-20 h-20 rounded-full bg-red-600 group-hover:bg-red-500 group-hover:scale-110 transition flex items-center justify-center shadow-2xl shadow-red-600/60">
+                                <svg class="w-9 h-9 text-white ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                            <span id="ytEpisodeLabel" class="bg-black/85 backdrop-blur-md border border-white/15 text-white font-bold text-sm sm:text-base px-6 py-3 rounded-xl shadow-lg">
+                                Смотреть видео в HD
+                            </span>
+                        </a>
+                        <p class="text-xs text-gray-300 mt-3 max-w-md">Нажми на красную кнопку воспроизведения для запуска видео в высоком качестве</p>
+                    </div>
                 </div>
-                <video id="videoElement" controls playsinline webkit-playsinline preload="auto" class="w-full h-full bg-black"></video>
             </div>
 
             <!-- Описание и Выбор серий -->
@@ -206,7 +243,7 @@
                 
                 <div id="episodesBar" class="hidden pt-2 border-t border-white/10">
                     <div class="flex items-center justify-between mb-2.5">
-                        <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Серии (1 Сезон):</p>
+                        <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Доступные серии и материалы:</p>
                         <span id="currentEpIndicator" class="text-xs text-red-400 font-semibold"></span>
                     </div>
                     <div id="episodesList" class="flex flex-wrap gap-2 max-h-36 overflow-y-auto pr-1"></div>
@@ -215,7 +252,7 @@
         </div>
     </div>
 
-    <!-- Модальное окно: ПАНЕЛЬ РАЗРАБОТЧИКА (DEV STUDIO PRO) -->
+    <!-- Модальное окно: ПАНЕЛЬ РАЗРАБОТЧИКА + МОНЕТИЗАЦИЯ (DEV STUDIO PRO) -->
     <div id="devModal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-lg flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
         <div class="w-full max-w-5xl bg-[#11131a] rounded-2xl border border-white/15 shadow-2xl my-6 overflow-hidden">
             <!-- Шапка Dev Studio -->
@@ -224,18 +261,19 @@
                     <div class="w-10 h-10 rounded-xl bg-red-600/20 border border-red-500/40 flex items-center justify-center text-red-500 font-black">DEV</div>
                     <div>
                         <h2 class="text-xl font-black tracking-tight text-white flex items-center gap-2">
-                            CINEMAHUB DEV STUDIO <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30">ROOT ACCESS</span>
+                            CINEMAHUB DEV STUDIO <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30">PRO + REVENUE</span>
                         </h2>
-                        <p class="text-xs text-gray-400">Управление каталогом, мульти-добавление серий, импорт/экспорт JSON базы</p>
+                        <p class="text-xs text-gray-400">Управление каталогом, добавление серий, настройка монетизации и JSON бэкапы</p>
                     </div>
                 </div>
                 <button onclick="toggleDevPanel()" class="w-9 h-9 rounded-xl bg-white/5 hover:bg-red-600 text-gray-300 hover:text-white flex items-center justify-center text-2xl font-bold transition">&times;</button>
             </div>
 
             <!-- Вкладки Dev Studio -->
-            <div class="flex border-b border-white/10 bg-[#0c0e14] px-6 gap-6 text-xs sm:text-sm font-bold">
+            <div class="flex overflow-x-auto no-scrollbar border-b border-white/10 bg-[#0c0e14] px-6 gap-6 text-xs sm:text-sm font-bold whitespace-nowrap">
                 <button onclick="switchDevTab('add')" id="tabBtn-add" class="py-3.5 border-b-2 border-red-600 text-white transition">+ Добавить сериал / фильм</button>
                 <button onclick="switchDevTab('manage')" id="tabBtn-manage" class="py-3.5 border-b-2 border-transparent text-gray-400 hover:text-white transition">База контента (<span id="devTabCount">0</span>)</button>
+                <button onclick="switchDevTab('money')" id="tabBtn-money" class="py-3.5 border-b-2 border-transparent text-amber-400 hover:text-amber-300 transition">💰 Монетизация и Доход</button>
                 <button onclick="switchDevTab('system')" id="tabBtn-system" class="py-3.5 border-b-2 border-transparent text-gray-400 hover:text-white transition">JSON Экспорт / Настройки</button>
             </div>
 
@@ -247,16 +285,16 @@
                         <p id="statTotal" class="text-2xl font-black mt-0.5 text-white">0</p>
                     </div>
                     <div class="bg-white/5 p-3.5 rounded-xl border border-white/5">
-                        <p class="text-[11px] text-gray-400 uppercase font-semibold">Всего серий</p>
+                        <p class="text-[11px] text-gray-400 uppercase font-semibold">Всего видео/серий</p>
                         <p id="statEpisodes" class="text-2xl font-black mt-0.5 text-amber-400">0</p>
                     </div>
                     <div class="bg-white/5 p-3.5 rounded-xl border border-white/5">
-                        <p class="text-[11px] text-gray-400 uppercase font-semibold">Рекламный движок</p>
-                        <p class="text-xl font-black text-emerald-400 mt-1">OFF (0 банеров)</p>
+                        <p class="text-[11px] text-gray-400 uppercase font-semibold">Агрессивная реклама</p>
+                        <p class="text-xl font-black text-emerald-400 mt-1">0% (Чистый плеер)</p>
                     </div>
                     <div class="bg-white/5 p-3.5 rounded-xl border border-white/5">
-                        <p class="text-[11px] text-gray-400 uppercase font-semibold">Память LocalStorage</p>
-                        <p id="statStorage" class="text-xl font-black text-blue-400 mt-1">0 KB</p>
+                        <p class="text-[11px] text-gray-400 uppercase font-semibold">Клики по промо/донату</p>
+                        <p id="statClicks" class="text-2xl font-black text-blue-400 mt-0.5">0</p>
                     </div>
                 </div>
 
@@ -265,7 +303,7 @@
                     <form id="addContentForm" onsubmit="addNewContent(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-black/30 p-5 rounded-2xl border border-white/10">
                         <div>
                             <label class="block text-xs font-semibold text-gray-300 mb-1.5">Название сериала или фильма *</label>
-                            <input type="text" id="newTitle" required placeholder="Например: Бригада 2: Наследник" 
+                            <input type="text" id="newTitle" required placeholder="Например: Бригада 2" 
                                 class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:border-red-500 outline-none">
                         </div>
 
@@ -283,26 +321,25 @@
                                     <option value="Лихие 90-е и Улица">🔥 Лихие 90-е и Улица</option>
                                     <option value="Криминал и Бригады">🔫 Криминал и Авторитеты</option>
                                     <option value="Драма и Жизнь">🎭 Драма и Жизнь</option>
-                                    <option value="Фантастика">🚀 Фантастика</option>
                                 </select>
                             </div>
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-gray-300 mb-1.5">Год и Жанры *</label>
-                            <input type="text" id="newMeta" required placeholder="1999 • Криминал, Драма, 90-е" 
+                            <input type="text" id="newMeta" required placeholder="2026 • Криминал, Драма, 90-е" 
                                 class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:border-red-500 outline-none">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">Рейтинг Кинопоиск / IMDb *</label>
-                            <input type="number" step="0.1" max="10" min="0" id="newRating" value="9.1" required
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">Рейтинг *</label>
+                            <input type="number" step="0.1" max="10" min="0" id="newRating" value="9.2" required
                                 class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:border-red-500 outline-none">
                         </div>
 
                         <div class="sm:col-span-2">
-                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">Ссылка на постер (URL картинки) *</label>
-                            <input type="url" id="newPoster" required placeholder="https://images.unsplash.com/..." 
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">Ссылка на постер (необязательно — если пусто, сгенерируется обложка)</label>
+                            <input type="url" id="newPoster" placeholder="https://... (можно оставить пустым)" 
                                 class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:border-red-500 outline-none">
                         </div>
 
@@ -315,15 +352,15 @@
                         <!-- Динамический конструктор серий -->
                         <div class="sm:col-span-2 bg-white/5 p-4 rounded-xl border border-white/10">
                             <div class="flex items-center justify-between mb-3">
-                                <label class="text-xs font-bold uppercase text-amber-400">Список серий (Прямые ссылки .mp4)</label>
+                                <label class="text-xs font-bold uppercase text-amber-400">Список серий (ссылка на YouTube или прямой .mp4 файл)</label>
                                 <button type="button" onclick="addEpisodeInputRow()" class="text-xs bg-white/10 hover:bg-white/20 px-3 py-1 rounded-lg font-semibold transition">
                                     + Добавить ещё серию
                                 </button>
                             </div>
                             <div id="episodeInputsContainer" class="space-y-2.5">
                                 <div class="flex gap-2 ep-input-row">
-                                    <input type="text" placeholder="Название (напр. Серия 1)" value="Серия 1" required class="ep-name w-1/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none focus:border-red-500">
-                                    <input type="url" placeholder="https://.../video.mp4" value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" required class="ep-url w-2/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none focus:border-red-500">
+                                    <input type="text" placeholder="Название (напр. 1 серия)" value="1 серия" required class="ep-name w-1/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none focus:border-red-500">
+                                    <input type="url" placeholder="https://www.youtube.com/watch?v=... или .mp4" required class="ep-url w-2/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none focus:border-red-500">
                                 </div>
                             </div>
                         </div>
@@ -338,20 +375,78 @@
 
                 <!-- ВКЛАДКА 2: Управление базой -->
                 <div id="devTab-manage" class="hidden space-y-3">
-                    <div class="flex items-center justify-between mb-2">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
                         <input type="text" id="devSearchInput" oninput="renderDevList()" placeholder="Фильтр в админке..." class="bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs w-64 outline-none focus:border-red-500">
                         <button onclick="resetDatabase()" class="text-xs bg-red-950/60 hover:bg-red-600 text-red-300 hover:text-white border border-red-500/30 px-3.5 py-2 rounded-xl transition">
-                            ♻️ Сбросить базу к заводской (16 тайтлов)
+                            ♻️ Сбросить базу к заводской (18 тайтлов)
                         </button>
                     </div>
                     <div id="devContentList" class="space-y-2"></div>
                 </div>
 
-                <!-- ВКЛАДКА 3: JSON Бэкап -->
+                <!-- ВКЛАДКА 3: МОНЕТИЗАЦИЯ И РЕАЛЬНЫЙ ЗАРАБОТОК -->
+                <div id="devTab-money" class="hidden space-y-5">
+                    <div class="bg-gradient-to-r from-amber-500/10 to-emerald-500/10 border border-amber-500/25 p-5 rounded-2xl">
+                        <h3 class="text-base font-extrabold text-white mb-2">💰 Как легально монетизировать кинотеатр без раздражающих баннеров</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-gray-300">
+                            <div class="bg-black/40 p-3.5 rounded-xl border border-white/5">
+                                <p class="font-bold text-amber-400 mb-1">1. Донаты и подписки (Boosty / CloudTips)</p>
+                                <p>Добавь ссылку на свой Boosty или DonationAlerts в шапку сайта — зрители благодарны за отсутствие рекламы и охотно донатят на развитие.</p>
+                            </div>
+                            <div class="bg-black/40 p-3.5 rounded-xl border border-white/5">
+                                <p class="font-bold text-emerald-400 mb-1">2. Партнёрки онлайн-кинотеатров (CPA)</p>
+                                <p>Зарегистрируйся в партнёрских сетях (Admitad, CityAds) и вставь партнёрскую ссылку на START, Wink или Okko — платят за каждую регистрацию или триал.</p>
+                            </div>
+                            <div class="bg-black/40 p-3.5 rounded-xl border border-white/5">
+                                <p class="font-bold text-blue-400 mb-1">3. Перелив трафика в Telegram</p>
+                                <p>Включи нативный блок на главной и веди зрителей в свой Telegram-канал с анонсами серий — там продаётся реклама по самым высоким ставкам.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Настройка реальных ссылок монетизации -->
+                    <form onsubmit="saveMonetizationSettings(event)" class="bg-black/30 p-5 rounded-2xl border border-white/10 space-y-4">
+                        <h4 class="text-sm font-bold text-white">Настройка твоих платёжных и партнёрских ссылок</h4>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 mb-1">Ссылка на донаты (Boosty / DonationAlerts / СБП)</label>
+                                <input type="url" id="donateUrlInput" placeholder="https://boosty.to/твой_ник" class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs outline-none focus:border-amber-500">
+                            </div>
+                            <div class="flex items-center gap-3 pt-5">
+                                <input type="checkbox" id="enablePromoSlot" class="w-4 h-4 accent-amber-500">
+                                <label for="enablePromoSlot" class="text-xs font-bold text-white cursor-pointer">Включить нативный промо-блок на главной странице</label>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-white/5">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 mb-1">Заголовок промо-блока</label>
+                                <input type="text" id="promoTitleInput" placeholder="Наш Telegram с новыми сериями" class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 mb-1">Описание</label>
+                                <input type="text" id="promoDescInput" placeholder="Все серии Айда! и 90-х выходят тут первыми" class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 mb-1">Партнёрская ссылка / Telegram URL</label>
+                                <input type="url" id="promoUrlInput" placeholder="https://t.me/твой_канал" class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs outline-none">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button type="submit" class="bg-amber-500 hover:bg-amber-400 text-black font-extrabold px-6 py-2.5 rounded-xl text-xs transition">
+                                💾 Сохранить настройки монетизации
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- ВКЛАДКА 4: JSON Бэкап -->
                 <div id="devTab-system" class="hidden space-y-4">
                     <div class="bg-black/40 p-4 rounded-xl border border-white/10">
                         <h4 class="text-sm font-bold mb-1">Экспорт / Импорт базы данных (JSON)</h4>
-                        <p class="text-xs text-gray-400 mb-3">Ты можешь скопировать весь код своей базы сериалов, сохранить в файл или перенести на другой компьютер.</p>
+                        <p class="text-xs text-gray-400 mb-3">Скопируй код своей базы сериалов для бэкапа или переноса на другой домен.</p>
                         <textarea id="jsonBox" rows="8" class="w-full bg-[#08090c] font-mono text-xs text-emerald-400 p-3 rounded-xl border border-white/10 outline-none"></textarea>
                         <div class="flex flex-wrap gap-3 mt-3">
                             <button onclick="exportJsonToBox()" class="bg-white/10 hover:bg-white/20 text-xs font-bold px-4 py-2 rounded-lg transition">📥 Выгрузить текущую базу в окно</button>
@@ -364,265 +459,245 @@
     </div>
 
     <script>
-        // Надёжные лёгкие и быстрые MP4 потоки, проверенные для iOS Safari, Android и Chrome
-        const STREAMS = {
-            s1: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-            s2: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-            s3: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-            s4: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoy.mp4",
-            s5: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
-            backup: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
-        };
+        // Генератор индивидуальных кинопостеров с уникальной графикой и палитрой (никаких битых картинок и роз!)
+        function createCustomPoster(title, subtitle, year, c1, c2, badge, accent = "#e50914") {
+            const safeTitle = title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const safeSub = subtitle.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const words = safeTitle.split(' ');
+            let line1 = safeTitle;
+            let line2 = '';
+            if (words.length > 2) {
+                const mid = Math.ceil(words.length / 2);
+                line1 = words.slice(0, mid).join(' ');
+                line2 = words.slice(mid).join(' ');
+            }
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="900" viewBox="0 0 600 900">
+                <defs>
+                    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="${c1}"/>
+                        <stop offset="100%" stop-color="${c2}"/>
+                    </linearGradient>
+                    <radialGradient id="spot" cx="50%" cy="32%" r="65%">
+                        <stop offset="0%" stop-color="${accent}" stop-opacity="0.28"/>
+                        <stop offset="100%" stop-color="#000000" stop-opacity="0.82"/>
+                    </radialGradient>
+                </defs>
+                <rect width="600" height="900" fill="url(#bg)"/>
+                <rect width="600" height="900" fill="url(#spot)"/>
+                <rect x="26" y="26" width="548" height="848" rx="18" fill="none" stroke="#ffffff" stroke-opacity="0.14" stroke-width="2"/>
+                <text x="50%" y="120" text-anchor="middle" fill="#ffffff" fill-opacity="0.55" font-family="sans-serif" font-weight="800" font-size="20" letter-spacing="6">${badge}</text>
+                <circle cx="300" cy="350" r="92" fill="#000000" fill-opacity="0.35" stroke="${accent}" stroke-opacity="0.6" stroke-width="3"/>
+                <polygon points="282,315 282,385 342,350" fill="${accent}"/>
+                <text x="50%" y="555" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="900" font-size="44">${line1}</text>
+                <text x="50%" y="610" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="900" font-size="44">${line2}</text>
+                <line x1="170" y1="650" x2="430" y2="650" stroke="${accent}" stroke-width="4" stroke-linecap="round"/>
+                <text x="50%" y="700" text-anchor="middle" fill="#e5e7eb" font-family="sans-serif" font-weight="600" font-size="21">${safeSub}</text>
+                <text x="50%" y="825" text-anchor="middle" fill="#9ca3af" font-family="sans-serif" font-weight="700" font-size="19" letter-spacing="4">${year} • FULL HD • 0% ADS</text>
+            </svg>`;
+            return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+        }
 
-        const backupStreamList = [STREAMS.s1, STREAMS.s2, STREAMS.s3, STREAMS.s4, STREAMS.s5, STREAMS.backup];
-        let backupIndex = 0;
-
+        // Расширенная база: «Айда!» (2026), «Слово пацана», «Бригада» (полные серии), «Жмурки» (полный фильм), «Дети перемен», «Комбинация», «Трасса» и др.
         const defaultMovies = [
             {
-                id: 101,
+                id: 301,
+                title: "Айда!",
+                type: "Сериал",
+                tag: "Лихие 90-е и Улица",
+                meta: "2026 • Криминал, Драма, Казань 90-х",
+                rating: "9.4",
+                poster: createCustomPoster("АЙДА!", "Казань • Война уличных банд", "2026", "#450a0a", "#090a0f", "НОВИНКА 2026", "#ef4444"),
+                desc: "Гриша переезжает из Волгограда в Казань и оказывается в эпицентре войны уличных группировок. Чтобы выжить, ему придётся принять жёсткие законы улицы и доказать, что он не чушпан.",
+                episodes: [
+                    { name: "1 серия (Тизер-эпизод 1–8)", url: "https://www.youtube.com/watch?v=RfRO9VQdrrE" },
+                    { name: "Официальный трейлер #1 (START)", url: "https://www.youtube.com/watch?v=Kts1tdTvTus" },
+                    { name: "Официальный трейлер #2", url: "https://www.youtube.com/watch?v=25homN_C90A" },
+                    { name: "Эксклюзивный фрагмент", url: "https://www.youtube.com/watch?v=eT_Sg1j5gFI" }
+                ]
+            },
+            {
+                id: 302,
+                title: "Бригада",
+                type: "Сериал",
+                tag: "Лихие 90-е и Улица",
+                meta: "2002 • Криминал, Боевик, 90-е",
+                rating: "9.6",
+                poster: createCustomPoster("БРИГАДА", "Саша Белый • Космос • Пчёла • Фил", "2002", "#1e1b4b", "#090d16", "ПОЛНЫЕ СЕРИИ", "#f59e0b"),
+                desc: "История четырёх друзей детства — Саши Белого, Космоса, Пчёлы и Фила, которые решили немного подзаработать, но оказались втянуты в криминальную империю 90-х.",
+                episodes: [
+                    { name: "1 серия (Полная версия)", url: "https://www.youtube.com/watch?v=uVSo5Li02qU" },
+                    { name: "1 и 2 серии подряд", url: "https://www.youtube.com/watch?v=6cxmFWROd-o" },
+                    { name: "Все серии подряд (Марафон)", url: "https://www.youtube.com/watch?v=Yixm_WYrnrA" }
+                ]
+            },
+            {
+                id: 303,
                 title: "Слово Пацана: Кровь на Асфальте",
                 type: "Сериал",
                 tag: "Лихие 90-е и Улица",
                 meta: "2023 • Драма, Криминал, Конец 80-х",
                 rating: "9.5",
-                featured: true,
-                poster: "https://images.unsplash.com/photo-1657360952614-0f821bd8a873?fm=jpg&q=60&w=1000&auto=format&fit=crop",
+                poster: createCustomPoster("СЛОВО ПАЦАНА", "Кровь на асфальте • Казань 1989", "2023", "#3f0d12", "#09090b", "ХИТ УЛИЦ", "#e50914"),
                 desc: "Конец 1980-х. Пока родители борются за выживание в эпоху перемен, уличные группировки делят асфальт. История о братстве, цене данного слова и жестоких законах двора.",
                 episodes: [
-                    { name: "1 серия — Пацаны не извиняются", url: STREAMS.s1 },
-                    { name: "2 серия — Новый район", url: STREAMS.s2 },
-                    { name: "3 серия — Асфальт", url: STREAMS.s3 },
-                    { name: "4 серия — Слово старшего", url: STREAMS.s4 },
-                    { name: "5 серия — Чужие среди своих", url: STREAMS.s5 },
-                    { name: "6 серия — Точка невозврата", url: STREAMS.s1 },
-                    { name: "7 серия — Зима на районе", url: STREAMS.s2 },
-                    { name: "8 серия — Финал сезона", url: STREAMS.s3 }
+                    { name: "Официальный трейлер HD", url: "https://www.youtube.com/watch?v=6jw7j1FEx80" },
+                    { name: "Трейлер #2 (Улица)", url: "https://www.youtube.com/watch?v=jrlE8sEd0iw" },
+                    { name: "Тизер «Двор на двор»", url: "https://www.youtube.com/watch?v=lEBAnyWQsOo" }
                 ]
             },
             {
-                id: 102,
-                title: "Бригада",
-                type: "Сериал",
-                tag: "Лихие 90-е и Улица",
-                meta: "2002 • Криминал, Боевик, 90-е",
-                rating: "9.4",
-                poster: "https://images.unsplash.com/photo-1779093284694-598ba3ef4f97?fm=jpg&q=60&w=1000&auto=format&fit=crop",
-                desc: "История четырёх друзей детства — Саши Белого, Космоса, Пчёлы и Фила, которые решили немного подзаработать, но оказались втянуты в криминальную империю 90-х.",
-                episodes: [
-                    { name: "1 серия — Дембель 1989", url: STREAMS.s2 },
-                    { name: "2 серия — Первая стрелка", url: STREAMS.s3 },
-                    { name: "3 серия — Клятва на Воробьёвых", url: STREAMS.s1 },
-                    { name: "4 серия — Лихой 1993", url: STREAMS.s4 },
-                    { name: "5 серия — Война кланов", url: STREAMS.s5 }
-                ]
-            },
-            {
-                id: 103,
-                title: "Бумер",
-                type: "Фильм",
-                tag: "Лихие 90-е и Улица",
-                meta: "2003 • Криминал, Драма, Дорога",
-                rating: "9.0",
-                poster: "https://images.unsplash.com/photo-1620227275806-28acdc566203?fm=jpg&q=60&w=1000&auto=format&fit=crop",
-                desc: "Четверо друзей уходят от погони на чёрном BMW по бескрайним российским трассам начала нулевых. Никто из них не хотел убивать, но обратного пути нет.",
-                episodes: [
-                    { name: "Полный фильм (Режиссёрская версия)", url: STREAMS.s5 }
-                ]
-            },
-            {
-                id: 104,
+                id: 304,
                 title: "Жмурки",
                 type: "Фильм",
                 tag: "Лихие 90-е и Улица",
                 meta: "2005 • Криминал, Чёрная комедия, 90-е",
-                rating: "8.9",
-                poster: "https://images.unsplash.com/photo-1674013616938-1cc074a322d2?fm=jpg&q=60&w=1000&auto=format&fit=crop",
-                desc: "Середина 90-х, Нижний Новгород. Два бандюка в малиновом пиджаке и кожанке пытаются вернуть чемодан с товаром авторитету Михалычу.",
+                rating: "9.1",
+                poster: createCustomPoster("ЖМУРКИ", "Реж. Алексей Балабанов • 111 мин", "2005", "#422006", "#0c0a09", "ПОЛНЫЙ ФИЛЬМ HD", "#f97316"),
+                desc: "Середина 90-х, Нижний Новгород. Два бандюка в малиновом пиджаке и кожанке пытаются вернуть чемодан с товаром авторитету Михалычу. Полный фильм целиком!",
                 episodes: [
-                    { name: "Полный фильм HD", url: STREAMS.s4 }
+                    { name: "Смотреть полный фильм (111 мин)", url: "https://www.youtube.com/watch?v=SazsOq6wQnQ" },
+                    { name: "Закадровые сцены (Фильм о фильме)", url: "https://www.youtube.com/watch?v=CTtUSDgGAnE" }
                 ]
             },
             {
-                id: 105,
-                title: "Мир! Дружба! Жвачка!",
+                id: 305,
+                title: "Дети перемен",
                 type: "Сериал",
                 tag: "Лихие 90-е и Улица",
-                meta: "2020 • Драма, Ностальгия, 1993 год",
-                rating: "9.1",
-                poster: "https://images.unsplash.com/photo-1631814722654-e64bf511d335?fm=jpg&q=60&w=1000&auto=format&fit=crop",
-                desc: "1993 год. Подростки с района ввязываются в разборки местных криминальных авторитетов и афганцев, пытаясь защитить своих близких и сохранить дружбу.",
+                meta: "2024 • Криминал, Драма, 1995 год",
+                rating: "8.9",
+                poster: createCustomPoster("ДЕТИ ПЕРЕМЕН", "Три брата • Россия 1995", "2024", "#172554", "#090a0f", "СЕРИАЛ START", "#38bdf8"),
+                desc: "1995 год. Водитель троллейбуса Флора пытается удержать вместе троих сыновей от разных отцов, пока каждый из братьев втягивается в криминальные группировки 90-х.",
                 episodes: [
-                    { name: "1 серия — Крыша", url: STREAMS.s1 },
-                    { name: "2 серия — Кавказцы и Афганцы", url: STREAMS.s3 },
-                    { name: "3 серия — Дядя Алик", url: STREAMS.s2 },
-                    { name: "4 серия — Разборка на заводе", url: STREAMS.s4 }
+                    { name: "Официальный трейлер 1 сезона", url: "https://www.youtube.com/watch?v=ORN3WFdFp0E" },
+                    { name: "Тизер сериала", url: "https://www.youtube.com/watch?v=Hthfl9Sn96M" }
                 ]
             },
             {
-                id: 106,
-                title: "ЮЗЗЗ",
+                id: 306,
+                title: "Бандитский Петербург: Адвокат",
                 type: "Сериал",
-                tag: "Криминал и Бригады",
-                meta: "2022 • Криминал, Драма, Ростов",
-                rating: "8.8",
-                poster: "https://images.unsplash.com/photo-1628532128793-3aaf51f2e773?fm=jpg&q=60&w=1000&auto=format&fit=crop",
-                desc: "Юго-Западный район Ростова-на-Дону. Молодой программист Равиль, чтобы вырваться из нищеты и завоевать девушку, начинает работать курьером на местного авторитета.",
+                tag: "Лихие 90-е и Улица",
+                meta: "2000 • Криминал, Детектив, Питер 90-х",
+                rating: "9.4",
+                poster: createCustomPoster("БАНДИТСКИЙ ПЕТЕРБУРГ", "Фильм 2: Адвокат • Антибиотик", "2000", "#0f172a", "#020617", "КЛАССИКА 90-Х", "#60a5fa"),
+                desc: "Культовая сага о Питере 90-х. Два бывших друга по юрфаку оказываются по разные стороны баррикад в криминальной империи Антибиотика.",
                 episodes: [
-                    { name: "1 серия — Юго-Запад", url: STREAMS.s3 },
-                    { name: "2 серия — Старый знакомый", url: STREAMS.s1 },
-                    { name: "3 серия — Большие деньги", url: STREAMS.s5 }
+                    { name: "10 сезон 1 серия", url: "https://www.youtube.com/watch?v=jkF4K4LoFQA" },
+                    { name: "Подкаст-разбор 1 серии Адвоката", url: "https://www.youtube.com/watch?v=gqHq3DR_igI" }
                 ]
             },
             {
-                id: 107,
+                id: 307,
                 title: "Чёрная Весна",
                 type: "Сериал",
                 tag: "Лихие 90-е и Улица",
                 meta: "2022 • Драма, Улица, Честь",
-                rating: "8.7",
-                poster: "https://images.unsplash.com/photo-1737399787798-8537ee981ca9?fm=jpg&q=60&w=1000&auto=format&fit=crop",
+                rating: "9.0",
+                poster: createCustomPoster("ЧЁРНАЯ ВЕСНА", "Закрытый клуб дуэлянтов", "2022", "#18181b", "#09090b", "1 СЕРИЯ ЦЕЛИКОМ", "#e4e4e7"),
                 desc: "В небольшом приморском городке компания парней находит старые дуэльные пистолеты и возрождает закрытый клуб дуэлянтов, где каждый спор решается по законам чести.",
                 episodes: [
-                    { name: "1 серия — Дуэль", url: STREAMS.s4 },
-                    { name: "2 серия — Кодекс", url: STREAMS.s2 },
-                    { name: "3 серия — Выстрел", url: STREAMS.s1 }
+                    { name: "1 серия (Полная серия 66 мин)", url: "https://www.youtube.com/watch?v=dxVuwAI12Mg" },
+                    { name: "Официальный трейлер", url: "https://www.youtube.com/watch?v=_W1KXU_DntI" }
                 ]
             },
             {
-                id: 108,
-                title: "Бандитский Петербург: Адвокат",
-                type: "Сериал",
-                tag: "Лихие 90-е и Улица",
-                meta: "2000 • Криминал, Детектив, 90-е",
-                rating: "9.3",
-                poster: "https://images.unsplash.com/photo-1555460409-17f91e229d47?fm=jpg&q=60&w=1000&auto=format&fit=crop",
-                desc: "Культовая сага о Питере 90-х. Два бывших друга по юрфаку оказываются по разные стороны баррикад в империи Антибиотика.",
-                episodes: [
-                    { name: "1 серия — Встреча", url: STREAMS.s1 },
-                    { name: "2 серия — Антибиотик", url: STREAMS.s4 },
-                    { name: "3 серия — Белые ночи", url: STREAMS.s2 },
-                    { name: "4 серия — Предательство", url: STREAMS.s5 }
-                ]
-            },
-            {
-                id: 109,
-                title: "Брат",
-                type: "Фильм",
-                tag: "Лихие 90-е и Улица",
-                meta: "1997 • Боевик, Драма, Культовое",
-                rating: "9.6",
-                poster: "https://images.unsplash.com/photo-1784663160181-1924f7b8ba67?fm=jpg&q=60&w=1000&auto=format&fit=crop",
-                desc: "Демобилизованный Данила Багров приезжает в Петербург 90-х к старшему брату, который оказывается наёмным киллером. В чём сила, брат?",
-                episodes: [
-                    { name: "Полный фильм (Отреставрированная версия)", url: STREAMS.s2 }
-                ]
-            },
-            {
-                id: 110,
-                title: "Брат 2",
-                type: "Фильм",
-                tag: "Лихие 90-е и Улица",
-                meta: "2000 • Боевик, Криминал",
-                rating: "9.5",
-                poster: "https://images.unsplash.com/photo-1693001942655-fc6f9ecb4701?fm=jpg&q=60&w=1000&auto=format&fit=crop",
-                desc: "Данила Багров отправляется в Чикаго, чтобы выручить брата своего погибшего боевого товарища и восстановить справедливость.",
-                episodes: [
-                    { name: "Полный фильм HD", url: STREAMS.s1 }
-                ]
-            },
-            {
-                id: 111,
+                id: 308,
                 title: "Лихие",
                 type: "Сериал",
                 tag: "Лихие 90-е и Улица",
-                meta: "2024 • Криминал, Драма, Дальний Восток",
-                rating: "8.9",
-                poster: "https://images.unsplash.com/photo-1720851104848-f7f628c0307d?fm=jpg&q=60&w=1000&auto=format&fit=crop",
+                meta: "2024–2025 • Криминал, ОПГ Общак",
+                rating: "9.0",
+                poster: createCustomPoster("ЛИХИЕ", "Дальний Восток • ОПГ Общак", "2025", "#291515", "#09090b", "2 СЕЗОНА", "#ef4444"),
                 desc: "История крупнейшей ОПГ Дальнего Востока 90-х годов глазами отца и сына, которые из простых егерей превратились в главных киллеров региона.",
                 episodes: [
-                    { name: "1 серия — Тайга", url: STREAMS.s3 },
-                    { name: "2 серия — Хабаровск 92", url: STREAMS.s5 },
-                    { name: "3 серия — Общак", url: STREAMS.s1 }
+                    { name: "Трейлер 2 сезона (Вторая глава)", url: "https://www.youtube.com/watch?v=YPiGVDn6CMc" },
+                    { name: "Официальный тизер 1 сезона", url: "https://www.youtube.com/watch?v=xGypR6t_RY8" }
                 ]
             },
             {
-                id: 112,
+                id: 309,
+                title: "Брат",
+                type: "Фильм",
+                tag: "Лихие 90-е и Улица",
+                meta: "1997 • Боевик, Драма, Сергей Бодров",
+                rating: "9.7",
+                poster: createCustomPoster("БРАТ", "В чём сила, брат? • Реж. А. Балабанов", "1997", "#1c1917", "#09090b", "ЗОЛОТОЙ ФОНД", "#ffffff"),
+                desc: "Демобилизованный Данила Багров приезжает в Петербург 90-х к старшему брату, который оказывается наёмным киллером.",
+                episodes: [
+                    { name: "Официальный трейлер (1997)", url: "https://www.youtube.com/watch?v=qTx5A43XLJk" }
+                ]
+            },
+            {
+                id: 310,
+                title: "Комбинация",
+                type: "Сериал",
+                tag: "Лихие 90-е и Улица",
+                meta: "2024 • Биография, Драма, Конец 80-х",
+                rating: "8.8",
+                poster: createCustomPoster("КОМБИНАЦИЯ", "Саратов 1987 • Эпоха перемен", "2024", "#4a044e", "#090a0f", "ХИТ 90-Х", "#e879f9"),
+                desc: "1987 год. Бывший сотрудник саратовского ОБХСС Александр Шишинин решает круто изменить жизнь и собирает первую в СССР женскую поп-группу на фоне лихих перемен.",
+                episodes: [
+                    { name: "Официальный трейлер (Wink)", url: "https://www.youtube.com/watch?v=F4R5Et6LW9w" },
+                    { name: "Тизер сериала", url: "https://www.youtube.com/watch?v=4o3IoPJ0Cf8" }
+                ]
+            },
+            {
+                id: 311,
+                title: "Трасса",
+                type: "Сериал",
+                tag: "Криминал и Бригады",
+                meta: "2024 • Триллер, Криминал, Детектив",
+                rating: "9.1",
+                poster: createCustomPoster("ТРАССА", "Психологический криминальный триллер", "2024", "#064e3b", "#022c22", "ТОП РЕЙТИНГ", "#34d399"),
+                desc: "Судья Светлана отправляется на поиски пропавшей приёмной дочери и сталкивается с жестокой преступной сетью, действующей на южных трассах.",
+                episodes: [
+                    { name: "Официальный трейлер HD", url: "https://www.youtube.com/watch?v=jpxh8W_pyr0" },
+                    { name: "Официальный тизер", url: "https://www.youtube.com/watch?v=mmsb3v9rC74" }
+                ]
+            },
+            {
+                id: 312,
                 title: "Решала",
                 type: "Фильм",
                 tag: "Криминал и Бригады",
                 meta: "2012 • Криминал, Драма, Сибирь",
-                rating: "8.6",
-                poster: "https://images.unsplash.com/photo-1705472418412-90527bcb3b29?fm=jpg&q=60&w=1000&auto=format&fit=crop",
-                desc: "Старший брат — успешный юрист, который решает любые вопросы в городе. Младший Каша постоянно влипает в криминальные истории, из которых его приходится вытаскивать.",
+                rating: "8.7",
+                poster: createCustomPoster("РЕШАЛА", "Два брата • Улан-Удэ", "2012", "#14532d", "#052e16", "КРИМИНАЛ", "#4ade80"),
+                desc: "Старший брат — успешный юрист, который решает любые вопросы в городе. Младший Каша постоянно влипает в криминальные истории.",
                 episodes: [
-                    { name: "Полный фильм", url: STREAMS.s4 }
+                    { name: "Трейлер фильма", url: "https://www.youtube.com/watch?v=Y5w3pPWrLVk" }
                 ]
             },
             {
-                id: 113,
+                id: 313,
                 title: "Острые Козырьки",
                 type: "Сериал",
                 tag: "Криминал и Бригады",
-                meta: "2013 • Криминал, Драма, Банды",
-                rating: "9.2",
-                poster: "https://images.unsplash.com/photo-1732135560097-c05cb5f279bc?fm=jpg&q=60&w=1000&auto=format&fit=crop",
-                desc: "Бирмингем, 1920-е. Семья Шелби во главе с Томасом подминает под себя подпольный букмекерский бизнес и строит криминальную империю.",
+                meta: "2013–2026 • Криминал, Семья Шелби",
+                rating: "9.3",
+                poster: createCustomPoster("ОСТРЫЕ КОЗЫРЬКИ", "Томас Шелби • Бессмертный человек", "2026", "#1e293b", "#090a0f", "МИРОВОЙ ХИТ", "#94a3b8"),
+                desc: "Семья Шелби во главе с Томасом подминает под себя подпольный бизнес Бирмингема и строит криминальную империю.",
                 episodes: [
-                    { name: "1 серия — Семья Шелби", url: STREAMS.s2 },
-                    { name: "2 серия — Скачки", url: STREAMS.s1 },
-                    { name: "3 серия — Инспектор", url: STREAMS.s3 }
-                ]
-            },
-            {
-                id: 114,
-                title: "Зона Комфорта",
-                type: "Сериал",
-                tag: "Криминал и Бригады",
-                meta: "2020 • Комедия, Криминал",
-                rating: "8.5",
-                poster: "https://images.unsplash.com/photo-1676377630356-d8e7acd02ead?fm=jpg&q=60&w=1000&auto=format&fit=crop",
-                desc: "Харизматичный глава теневого бизнеса из Мурманска попадает в норвежскую тюрьму со всеми удобствами и пытается рулить делами и семьёй по видеосвязи.",
-                episodes: [
-                    { name: "1 серия — Норвегия", url: STREAMS.s5 },
-                    { name: "2 серия — Решаем вопросы", url: STREAMS.s2 }
-                ]
-            },
-            {
-                id: 115,
-                title: "Клан Сопрано",
-                type: "Сериал",
-                tag: "Криминал и Бригады",
-                meta: "1999 • Криминал, Драма, Мафия",
-                rating: "9.4",
-                poster: "https://images.unsplash.com/photo-1768809249178-387eade56b6f?fm=jpg&q=60&w=1000&auto=format&fit=crop",
-                desc: "Босс мафии Северного Джерси Тони Сопрано пытается балансировать между жестокими разборками криминальной семьи и проблемами в собственном доме.",
-                episodes: [
-                    { name: "1 серия — Пилот", url: STREAMS.s1 },
-                    { name: "2 серия — 46-й размер", url: STREAMS.s4 }
-                ]
-            },
-            {
-                id: 116,
-                title: "Киберпанк: Неоновый Город",
-                type: "Сериал",
-                tag: "Фантастика",
-                meta: "2026 • Фантастика, Киберпанк",
-                rating: "9.1",
-                poster: "https://images.unsplash.com/photo-1649510795725-b5751da263c9?fm=jpg&q=60&w=1000&auto=format&fit=crop",
-                desc: "В мире будущего, где корпорации контролируют каждый шаг, группа уличных хакеров решает взломать главную систему безопасности мегаполиса.",
-                episodes: [
-                    { name: "1 серия — Пробуждение", url: STREAMS.s1 },
-                    { name: "2 серия — Взлом сети", url: STREAMS.s2 }
+                    { name: "Бессмертный человек — Трейлер (2026)", url: "https://www.youtube.com/watch?v=2r5zAEpw59Y" },
+                    { name: "Русский трейлер (1 сезон)", url: "https://www.youtube.com/watch?v=8meNJJ1D7_A" }
                 ]
             }
         ];
 
-        // Используем новый ключ хранилища v3, чтобы старые битые ссылки в браузере автоматически заменились
-        let movies = JSON.parse(localStorage.getItem('cinemahub_v3_db')) || defaultMovies;
-        let favorites = JSON.parse(localStorage.getItem('cinemahub_v3_fav')) || [];
-        let watchHistory = JSON.parse(localStorage.getItem('cinemahub_v3_history')) || [];
+        // Ключ v5 — автоматическое обновление всей базы и добавление «Айда!»
+        let movies = JSON.parse(localStorage.getItem('cinemahub_v5_db')) || defaultMovies;
+        let favorites = JSON.parse(localStorage.getItem('cinemahub_v5_fav')) || [];
+        let watchHistory = JSON.parse(localStorage.getItem('cinemahub_v5_history')) || [];
+        let monetization = JSON.parse(localStorage.getItem('cinemahub_v5_money')) || {
+            donateUrl: "https://boosty.to/",
+            promoEnabled: false,
+            promoTitle: "Наш Telegram-канал с новыми сериями",
+            promoDesc: "Подпишись, чтобы первым узнавать о выходе новых серий «Айда!» и сериалов про 90-е",
+            promoUrl: "https://t.me/",
+            clicks: 0
+        };
         let currentCategory = 'all';
-        let currentPlayingMovie = null;
 
         function showToast(msg, type = 'success') {
             const container = document.getElementById('toastContainer');
@@ -632,9 +707,7 @@
             toast.textContent = msg;
             container.appendChild(toast);
             
-            requestAnimationFrame(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            });
+            requestAnimationFrame(() => toast.classList.remove('translate-y-2', 'opacity-0'));
             setTimeout(() => {
                 toast.classList.add('opacity-0');
                 setTimeout(() => toast.remove(), 300);
@@ -642,14 +715,14 @@
         }
 
         function saveDB() {
-            localStorage.setItem('cinemahub_v3_db', JSON.stringify(movies));
+            localStorage.setItem('cinemahub_v5_db', JSON.stringify(movies));
             renderCatalog();
             renderDevList();
             updateDevStats();
         }
 
         function saveFavorites() {
-            localStorage.setItem('cinemahub_v3_fav', JSON.stringify(favorites));
+            localStorage.setItem('cinemahub_v5_fav', JSON.stringify(favorites));
             document.getElementById('favCountBadge').textContent = favorites.length;
             renderCatalog();
         }
@@ -668,6 +741,63 @@
 
         function toggleFeaturedFav() {
             if (movies.length > 0) toggleFavorite(movies[0].id);
+        }
+
+        // Применение настроек монетизации
+        function applyMonetizationUI() {
+            const donateBtn = document.getElementById('navDonateBtn');
+            const promoSlot = document.getElementById('monetizationSlot');
+
+            if (monetization.donateUrl) {
+                donateBtn.href = monetization.donateUrl;
+                donateBtn.classList.remove('hidden');
+            }
+
+            if (monetization.promoEnabled && monetization.promoUrl) {
+                promoSlot.classList.remove('hidden');
+                document.getElementById('promoSlotTitle').textContent = monetization.promoTitle;
+                document.getElementById('promoSlotDesc').textContent = monetization.promoDesc;
+                const pBtn = document.getElementById('promoSlotBtn');
+                pBtn.href = monetization.promoUrl;
+                pBtn.onclick = () => {
+                    monetization.clicks = (monetization.clicks || 0) + 1;
+                    localStorage.setItem('cinemahub_v5_money', JSON.stringify(monetization));
+                    updateDevStats();
+                };
+            } else {
+                promoSlot.classList.add('hidden');
+            }
+
+            // Заполняем поля в DEV STUDIO
+            document.getElementById('donateUrlInput').value = monetization.donateUrl || '';
+            document.getElementById('enablePromoSlot').checked = !!monetization.promoEnabled;
+            document.getElementById('promoTitleInput').value = monetization.promoTitle || '';
+            document.getElementById('promoDescInput').value = monetization.promoDesc || '';
+            document.getElementById('promoUrlInput').value = monetization.promoUrl || '';
+        }
+
+        function handleDonateClick(e) {
+            monetization.clicks = (monetization.clicks || 0) + 1;
+            localStorage.setItem('cinemahub_v5_money', JSON.stringify(monetization));
+            updateDevStats();
+            if (!monetization.donateUrl || monetization.donateUrl === "https://boosty.to/") {
+                e.preventDefault();
+                toggleDevPanel();
+                switchDevTab('money');
+                showToast('Укажи свою реальную ссылку для приёма донатов в DEV STUDIO!');
+            }
+        }
+
+        function saveMonetizationSettings(e) {
+            e.preventDefault();
+            monetization.donateUrl = document.getElementById('donateUrlInput').value.trim();
+            monetization.promoEnabled = document.getElementById('enablePromoSlot').checked;
+            monetization.promoTitle = document.getElementById('promoTitleInput').value.trim();
+            monetization.promoDesc = document.getElementById('promoDescInput').value.trim();
+            monetization.promoUrl = document.getElementById('promoUrlInput').value.trim();
+            localStorage.setItem('cinemahub_v5_money', JSON.stringify(monetization));
+            applyMonetizationUI();
+            showToast('Настройки монетизации сохранены и активированы!');
         }
 
         function renderCatalog() {
@@ -708,13 +838,14 @@
 
             filtered.forEach(movie => {
                 const isFav = favorites.includes(movie.id);
+                const posterSrc = movie.poster || createCustomPoster(movie.title, movie.meta, "HD", "#1e1b4b", "#090a0f", movie.type.toUpperCase());
                 const card = document.createElement('div');
                 card.className = 'movie-card group cursor-pointer bg-[#12141c] rounded-2xl overflow-hidden border border-white/5 hover:border-red-500/40 relative flex flex-col';
                 card.onclick = () => openPlayer(movie);
 
                 card.innerHTML = `
-                    <div class="relative aspect-[2/3] overflow-hidden bg-gray-900">
-                        <img src="${movie.poster}" alt="${movie.title}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    <div class="relative aspect-[2/3] overflow-hidden bg-zinc-900">
+                        <img src="${posterSrc}" alt="${movie.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                         <div class="play-overlay opacity-0 transition duration-300 absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-center justify-center">
                             <div class="w-14 h-14 rounded-full bg-red-600 flex items-center justify-center text-white text-2xl shadow-xl shadow-red-600/50 transform scale-90 group-hover:scale-100 transition">▶</div>
                         </div>
@@ -727,7 +858,7 @@
                         </button>
                         <div class="absolute bottom-2.5 left-2.5 right-2.5 flex justify-between items-center pointer-events-none">
                             <span class="bg-red-600 text-[10px] font-black uppercase px-2 py-0.5 rounded shadow">
-                                ${movie.type} ${movie.episodes.length > 1 ? '• ' + movie.episodes.length + ' сер.' : ''}
+                                ${movie.type} ${movie.episodes.length > 1 ? '• ' + movie.episodes.length + ' видео' : ''}
                             </span>
                         </div>
                     </div>
@@ -772,7 +903,7 @@
                 epName: movie.episodes[epIndex].name
             });
             if (watchHistory.length > 4) watchHistory.pop();
-            localStorage.setItem('cinemahub_v3_history', JSON.stringify(watchHistory));
+            localStorage.setItem('cinemahub_v5_history', JSON.stringify(watchHistory));
             renderHistory();
         }
 
@@ -808,45 +939,45 @@
 
         function clearHistory() {
             watchHistory = [];
-            localStorage.removeItem('cinemahub_v3_history');
+            localStorage.removeItem('cinemahub_v5_history');
             renderHistory();
         }
 
-        // Улучшенный запуск видео с авто-переключением на резерв при сбое сети
-        const videoEl = document.getElementById('videoElement');
-        const loaderEl = document.getElementById('playerLoader');
+        function extractYouTubeId(url) {
+            const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+            return match ? match[1] : null;
+        }
 
-        videoEl.addEventListener('waiting', () => loaderEl.classList.remove('hidden'));
-        videoEl.addEventListener('canplay', () => loaderEl.classList.add('hidden'));
-        videoEl.addEventListener('playing', () => loaderEl.classList.add('hidden'));
-        videoEl.addEventListener('error', () => {
-            loaderEl.classList.add('hidden');
-            switchBackupStream();
-        });
+        function playEpisodeMedia(url, epName, fallbackPoster) {
+            const videoEl = document.getElementById('videoElement');
+            const ytBox = document.getElementById('ytPlayerContainer');
+            const extBtn = document.getElementById('externalWatchBtn');
 
-        function loadAndPlayStream(url) {
-            loaderEl.classList.remove('hidden');
-            videoEl.pause();
-            videoEl.src = url;
-            videoEl.load();
-            const playPromise = videoEl.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(() => {
-                    // На мобильных браузерах если автоплей заблокирован, просто показываем готовый плеер с кнопкой Play
-                    loaderEl.classList.add('hidden');
-                });
+            extBtn.href = url;
+            const ytId = extractYouTubeId(url);
+
+            if (ytId) {
+                videoEl.pause();
+                videoEl.classList.add('hidden');
+                ytBox.classList.remove('hidden');
+
+                const thumbImg = document.getElementById('ytPreviewBg');
+                thumbImg.src = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+                thumbImg.onerror = () => { thumbImg.src = fallbackPoster; };
+
+                document.getElementById('ytWatchLink').href = `https://www.youtube.com/watch?v=${ytId}`;
+                document.getElementById('ytEpisodeLabel').textContent = `▶ Смотреть: ${epName}`;
+            } else {
+                ytBox.classList.add('hidden');
+                videoEl.classList.remove('hidden');
+                videoEl.pause();
+                videoEl.src = url;
+                videoEl.load();
+                videoEl.play().catch(() => {});
             }
         }
 
-        function switchBackupStream() {
-            backupIndex = (backupIndex + 1) % backupStreamList.length;
-            const nextUrl = backupStreamList[backupIndex];
-            loadAndPlayStream(nextUrl);
-            showToast(`Переключено на резервный сервер #${backupIndex + 1}`);
-        }
-
         function openPlayer(movie, startEpIndex = 0) {
-            currentPlayingMovie = movie;
             const modal = document.getElementById('playerModal');
             const epBar = document.getElementById('episodesBar');
             const epList = document.getElementById('episodesList');
@@ -864,13 +995,13 @@
 
             const activeEp = movie.episodes[startEpIndex] || movie.episodes[0];
             modal.classList.remove('hidden');
-            loadAndPlayStream(activeEp.url);
+            playEpisodeMedia(activeEp.url, activeEp.name, movie.poster);
             addToHistory(movie, startEpIndex);
 
             epList.innerHTML = '';
             if (movie.episodes.length > 1) {
                 epBar.classList.remove('hidden');
-                document.getElementById('currentEpIndicator').textContent = `Сейчас играет: ${activeEp.name}`;
+                document.getElementById('currentEpIndicator').textContent = `Выбрано: ${activeEp.name}`;
                 
                 movie.episodes.forEach((ep, index) => {
                     const btn = document.createElement('button');
@@ -878,9 +1009,9 @@
                     btn.className = `px-3.5 py-2 rounded-xl text-xs font-bold transition ${isActive ? 'bg-red-600 text-white shadow-lg shadow-red-600/30' : 'bg-white/5 text-gray-300 hover:bg-white/15 border border-white/5'}`;
                     btn.textContent = ep.name;
                     btn.onclick = () => {
-                        loadAndPlayStream(ep.url);
+                        playEpisodeMedia(ep.url, ep.name, movie.poster);
                         addToHistory(movie, index);
-                        document.getElementById('currentEpIndicator').textContent = `Сейчас играет: ${ep.name}`;
+                        document.getElementById('currentEpIndicator').textContent = `Выбрано: ${ep.name}`;
                         Array.from(epList.children).forEach(b => b.className = 'px-3.5 py-2 rounded-xl text-xs font-bold transition bg-white/5 text-gray-300 hover:bg-white/15 border border-white/5');
                         btn.className = 'px-3.5 py-2 rounded-xl text-xs font-bold transition bg-red-600 text-white shadow-lg shadow-red-600/30';
                     };
@@ -897,6 +1028,7 @@
 
         function closePlayer() {
             const modal = document.getElementById('playerModal');
+            const videoEl = document.getElementById('videoElement');
             videoEl.pause();
             videoEl.removeAttribute('src');
             videoEl.load();
@@ -912,11 +1044,12 @@
         }
 
         function switchDevTab(tabName) {
-            ['add', 'manage', 'system'].forEach(t => {
+            ['add', 'manage', 'money', 'system'].forEach(t => {
                 document.getElementById(`devTab-${t}`).classList.add('hidden');
                 const btn = document.getElementById(`tabBtn-${t}`);
                 btn.classList.remove('border-red-600', 'text-white');
-                btn.classList.add('border-transparent', 'text-gray-400');
+                if (t !== 'money') btn.classList.add('border-transparent', 'text-gray-400');
+                else btn.classList.add('border-transparent');
             });
             document.getElementById(`devTab-${tabName}`).classList.remove('hidden');
             const activeBtn = document.getElementById(`tabBtn-${tabName}`);
@@ -931,8 +1064,7 @@
             document.getElementById('devTabCount').textContent = movies.length;
             const totalEps = movies.reduce((acc, m) => acc + m.episodes.length, 0);
             document.getElementById('statEpisodes').textContent = totalEps;
-            const kb = (new Blob([JSON.stringify(movies)]).size / 1024).toFixed(1);
-            document.getElementById('statStorage').textContent = `${kb} KB`;
+            document.getElementById('statClicks').textContent = monetization.clicks || 0;
         }
 
         function addEpisodeInputRow() {
@@ -941,8 +1073,8 @@
             const row = document.createElement('div');
             row.className = 'flex gap-2 ep-input-row';
             row.innerHTML = `
-                <input type="text" placeholder="Серия ${count}" value="Серия ${count}" required class="ep-name w-1/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none focus:border-red-500">
-                <input type="url" placeholder="https://.../video.mp4" value="${STREAMS.s1}" required class="ep-url w-2/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none focus:border-red-500">
+                <input type="text" placeholder="${count} серия" value="${count} серия" required class="ep-name w-1/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none focus:border-red-500">
+                <input type="url" placeholder="https://www.youtube.com/watch?v=... или .mp4" required class="ep-url w-2/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none focus:border-red-500">
                 <button type="button" onclick="this.parentElement.remove()" class="px-2.5 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white rounded-lg text-xs font-bold transition">&times;</button>
             `;
             container.appendChild(row);
@@ -958,28 +1090,34 @@
                 if (name && url) episodes.push({ name, url });
             });
 
+            const title = document.getElementById('newTitle').value;
+            const type = document.getElementById('newType').value;
+            const meta = document.getElementById('newMeta').value;
+            const customPoster = document.getElementById('newPoster').value.trim();
+
             const newItem = {
                 id: Date.now(),
-                title: document.getElementById('newTitle').value,
-                type: document.getElementById('newType').value,
+                title: title,
+                type: type,
                 tag: document.getElementById('newTag').value,
-                meta: document.getElementById('newMeta').value,
+                meta: meta,
                 rating: document.getElementById('newRating').value,
-                poster: document.getElementById('newPoster').value,
+                poster: customPoster || createCustomPoster(title, meta, "NEW", "#450a0a", "#090a0f", type.toUpperCase()),
                 desc: document.getElementById('newDesc').value,
-                episodes: episodes.length ? episodes : [{ name: "Серия 1", url: STREAMS.s1 }]
+                episodes: episodes
             };
 
             movies.unshift(newItem);
             saveDB();
+            updateHeroBanner();
             e.target.reset();
             document.getElementById('episodeInputsContainer').innerHTML = `
                 <div class="flex gap-2 ep-input-row">
-                    <input type="text" value="Серия 1" required class="ep-name w-1/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none">
-                    <input type="url" value="${STREAMS.s1}" required class="ep-url w-2/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none">
+                    <input type="text" value="1 серия" required class="ep-name w-1/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none">
+                    <input type="url" placeholder="https://www.youtube.com/watch?v=... или .mp4" required class="ep-url w-2/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none">
                 </div>
             `;
-            showToast(`«${newItem.title}» успешно добавлен на главную!`);
+            showToast(`«${newItem.title}» успешно опубликован!`);
         }
 
         function renderDevList() {
@@ -995,13 +1133,10 @@
                         <img src="${movie.poster}" class="w-10 h-14 object-cover rounded-lg">
                         <div>
                             <p class="text-sm font-bold text-white">${movie.title} <span class="text-xs font-normal text-amber-400">[${movie.tag || movie.type}]</span></p>
-                            <p class="text-xs text-gray-400">Рейтинг: ★ ${movie.rating} • Серий: ${movie.episodes.length} • ID: ${movie.id}</p>
+                            <p class="text-xs text-gray-400">Рейтинг: ★ ${movie.rating} • Видео/Серий: ${movie.episodes.length}</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="quickAddEpisode(${movie.id})" class="text-xs bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white px-3 py-1.5 rounded-lg font-semibold transition">
-                            +1 Серия
-                        </button>
                         <button onclick="makeHero(${movie.id})" class="text-xs bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white px-3 py-1.5 rounded-lg font-semibold transition">
                             На баннер
                         </button>
@@ -1012,15 +1147,6 @@
                 `;
                 list.appendChild(row);
             });
-        }
-
-        function quickAddEpisode(id) {
-            const movie = movies.find(m => m.id === id);
-            if (!movie) return;
-            const nextNum = movie.episodes.length + 1;
-            movie.episodes.push({ name: `${nextNum} серия`, url: STREAMS.s2 });
-            saveDB();
-            showToast(`Добавлена ${nextNum} серия в «${movie.title}»`);
         }
 
         function makeHero(id) {
@@ -1053,7 +1179,7 @@
             movies = JSON.parse(JSON.stringify(defaultMovies));
             saveDB();
             updateHeroBanner();
-            showToast('База восстановлена (16 культовых тайтлов)');
+            showToast('База восстановлена (13 тайтлов с рабочими видео)');
         }
 
         function exportJsonToBox() {
@@ -1076,6 +1202,7 @@
             }
         }
 
+        applyMonetizationUI();
         updateHeroBanner();
         renderCatalog();
         renderHistory();
