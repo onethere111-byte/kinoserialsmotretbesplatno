@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CinemaHub — Бесплатный онлайн-кинотеатр без рекламы</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #08090c;
+            --bg-card: #12141c;
+            --accent: #e50914;
+        }
+        body {
+            background-color: var(--bg-main);
+            color: #ffffff;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            overflow-x: hidden;
+        }
+        .glass {
+            background: rgba(18, 20, 28, 0.78);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .movie-card {
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+        }
+        .movie-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 20px 35px -10px rgba(229, 9, 20, 0.25);
+        }
+        .movie-card:hover .play-overlay {
+            opacity: 1;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Кастомный скроллбар для админки */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d0f15;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #272b3b;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e50914;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-red-600 selection:text-white">
+
+    <!-- Уведомления (Toast) -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Навигация -->
+    <nav class="fixed top-0 w-full z-40 glass border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-6 lg:gap-8">
+                <a href="#" onclick="resetFilters()" class="flex items-center gap-2 text-2xl font-black tracking-tighter text-red-600">
+                    <span class="w-8 h-8 rounded-lg bg-red-600 text-white flex items-center justify-center text-base shadow-lg shadow-red-600/40">▶</span>
+                    <span>CINEMA<span class="text-white">HUB</span></span>
+                </a>
+                <div class="hidden md:flex items-center gap-5 text-sm font-medium text-gray-300">
+                    <button onclick="filterCategory('all')" class="nav-btn hover:text-white transition text-white font-semibold">Главная</button>
+                    <button onclick="filterCategory('Лихие 90-е и Улица')" class="nav-btn hover:text-white transition text-amber-400">🔥 90-е и Пацанские</button>
+                    <button onclick="filterCategory('Сериал')" class="nav-btn hover:text-white transition">Сериалы</button>
+                    <button onclick="filterCategory('Фильм')" class="nav-btn hover:text-white transition">Фильмы</button>
+                    <button onclick="filterCategory('favorites')" class="nav-btn hover:text-white transition">Избранное (<span id="favCountBadge">0</span>)</button>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <input type="text" id="searchInput" oninput="renderCatalog()" placeholder="Поиск по названию, актёрам, году..." 
+                        class="bg-white/5 border border-white/10 rounded-full pl-9 pr-4 py-1.5 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-red-500 focus:bg-white/10 w-40 sm:w-64 transition">
+                    <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                
+                <button onclick="toggleDevPanel()" 
+                    class="bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white text-xs sm:text-sm font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-2 shadow-lg shadow-red-600/30 border border-red-400/20">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span>DEV STUDIO</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Главный баннер (Hero) -->
+    <header class="relative pt-16">
+        <div class="relative h-[68vh] min-h-[460px] w-full overflow-hidden">
+            <img id="heroBg" src="https://images.unsplash.com/photo-1657360952614-0f821bd8a873?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D" 
+                alt="Hero" class="w-full h-full object-cover opacity-50 scale-105 transition-all duration-1000">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#08090c] via-[#08090c]/55 to-black/30"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-[#08090c] via-[#08090c]/60 to-transparent"></div>
+            
+            <div class="absolute bottom-10 left-0 w-full">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex flex-wrap items-center gap-2 mb-3">
+                        <span class="bg-red-600 text-xs font-extrabold uppercase px-2.5 py-1 rounded tracking-wider">ХИТ СЕЗОНА</span>
+                        <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold px-2.5 py-1 rounded">0% РЕКЛАМЫ • FULL HD / 4K</span>
+                        <span id="heroRatingBadge" class="bg-white/10 text-amber-400 text-xs font-bold px-2.5 py-1 rounded">★ 9.5</span>
+                    </div>
+                    <h1 id="heroTitle" class="text-4xl sm:text-6xl font-black tracking-tight mb-3 max-w-3xl leading-tight">Слово Пацана: Кровь на Асфальте</h1>
+                    <p id="heroDesc" class="text-gray-300 max-w-2xl text-sm sm:text-base mb-6 line-clamp-3 leading-relaxed">
+                        Конец 1980-х. Пока родители борются за выживание в эпоху перемен, уличные группировки делят асфальт. История о братстве, цене данного слова и жестоких законах двора.
+                    </p>
+                    <div class="flex flex-wrap items-center gap-4">
+                        <button onclick="playFeatured()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-7 py-3.5 rounded-xl transition flex items-center gap-2.5 shadow-xl shadow-red-600/30">
+                            <span class="text-lg">▶</span> Смотреть 1 серию бесплатно
+                        </button>
+                        <button onclick="toggleFeaturedFav()" class="glass hover:bg-white/15 text-white font-semibold px-5 py-3.5 rounded-xl border border-white/15 transition flex items-center gap-2">
+                            <span>+ В избранное</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Быстрые теги-подборки -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <div class="flex items-center gap-2.5 overflow-x-auto no-scrollbar pb-2">
+            <button onclick="filterCategory('all')" class="tag-pill px-4 py-2 rounded-full text-xs font-bold bg-red-600 text-white whitespace-nowrap transition">Все тайтлы</button>
+            <button onclick="filterCategory('Лихие 90-е и Улица')" class="tag-pill px-4 py-2 rounded-full text-xs font-bold bg-white/5 hover:bg-white/10 text-amber-400 border border-amber-400/20 whitespace-nowrap transition">🔥 Лихие 90-е и Улица</button>
+            <button onclick="filterCategory('Криминал и Бригады')" class="tag-pill px-4 py-2 rounded-full text-xs font-bold bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 whitespace-nowrap transition">🔫 Криминал и Авторитеты</button>
+            <button onclick="filterCategory('Сериал')" class="tag-pill px-4 py-2 rounded-full text-xs font-bold bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 whitespace-nowrap transition">📺 Все сериалы</button>
+            <button onclick="filterCategory('Фильм')" class="tag-pill px-4 py-2 rounded-full text-xs font-bold bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 whitespace-nowrap transition">🎬 Полнометражные фильмы</button>
+            <button onclick="filterCategory('favorites')" class="tag-pill px-4 py-2 rounded-full text-xs font-bold bg-white/5 hover:bg-white/10 text-pink-400 border border-pink-400/20 whitespace-nowrap transition">❤️ Моё избранное</button>
+        </div>
+    </section>
+
+    <!-- Блок "Продолжить просмотр" (появляется автоматически, если пользователь что-то включал) -->
+    <section id="continueSection" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 hidden">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold flex items-center gap-2">
+                <span class="w-2 h-6 bg-red-600 rounded-full"></span>
+                Продолжить просмотр
+            </h2>
+            <button onclick="clearHistory()" class="text-xs text-gray-400 hover:text-white">Очистить историю</button>
+        </div>
+        <div id="continueGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"></div>
+    </section>
+
+    <!-- Основной Каталог -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <div>
+                <h2 id="catalogTitle" class="text-2xl sm:text-3xl font-extrabold tracking-tight">Все сериалы и фильмы</h2>
+                <p class="text-xs text-gray-400 mt-1">Прямой поток без рекламных вставок, регистраций и подписок</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <select id="sortSelect" onchange="renderCatalog()" class="bg-[#12141c] border border-white/10 rounded-xl px-3 py-2 text-xs font-semibold text-gray-300 outline-none focus:border-red-500">
+                    <option value="default">По умолчанию</option>
+                    <option value="rating">По высокому рейтингу</option>
+                    <option value="episodes">Больше всего серий</option>
+                </select>
+                <span id="itemsCount" class="text-xs font-semibold bg-white/5 px-3 py-2 rounded-xl text-gray-300 border border-white/10"></span>
+            </div>
+        </div>
+
+        <!-- Сетка карточек -->
+        <div id="catalogGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 sm:gap-6">
+            <!-- Карточки рендерятся через JS -->
+        </div>
+    </main>
+
+    <!-- Модальное окно: Продвинутый Видеоплеер -->
+    <div id="playerModal" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-xl flex items-center justify-center p-2 sm:p-6 overflow-y-auto">
+        <div class="w-full max-w-5xl bg-[#11131a] rounded-2xl overflow-hidden border border-white/15 shadow-2xl my-auto">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-white/10 bg-[#0c0e14]">
+                <div class="flex items-center gap-3">
+                    <span class="bg-red-600 text-[10px] font-black px-2 py-0.5 rounded uppercase">Без рекламы</span>
+                    <div>
+                        <h3 id="playerTitle" class="text-base sm:text-lg font-bold leading-tight">Название</h3>
+                        <p id="playerMeta" class="text-xs text-gray-400">Жанр • Год</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="playerFavBtn" class="text-xs bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg font-semibold transition">❤️ В избранное</button>
+                    <button onclick="closePlayer()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-red-600 flex items-center justify-center text-white text-xl font-bold transition">&times;</button>
+                </div>
+            </div>
+            
+            <!-- Видеоконтейнер -->
+            <div class="relative aspect-video bg-black group">
+                <video id="videoElement" controls class="w-full h-full" autoplay>
+                    <source src="" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+            </div>
+
+            <!-- Описание и Выбор серий -->
+            <div class="p-5 bg-[#0f1118] border-t border-white/10 space-y-4">
+                <p id="playerDesc" class="text-xs sm:text-sm text-gray-300 leading-relaxed"></p>
+                
+                <div id="episodesBar" class="hidden pt-2 border-t border-white/10">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Серии (1 Сезон):</p>
+                        <span id="currentEpIndicator" class="text-xs text-red-400 font-semibold"></span>
+                    </div>
+                    <div id="episodesList" class="flex flex-wrap gap-2 max-h-36 overflow-y-auto pr-1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно: ПАНЕЛЬ РАЗРАБОТЧИКА (DEV STUDIO PRO) -->
+    <div id="devModal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-lg flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+        <div class="w-full max-w-5xl bg-[#11131a] rounded-2xl border border-white/15 shadow-2xl my-6 overflow-hidden">
+            <!-- Шапка Dev Studio -->
+            <div class="flex flex-wrap items-center justify-between px-6 py-4 bg-gradient-to-r from-[#191c26] to-[#11131a] border-b border-white/10 gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-red-600/20 border border-red-500/40 flex items-center justify-center text-red-500 font-black">DEV</div>
+                    <div>
+                        <h2 class="text-xl font-black tracking-tight text-white flex items-center gap-2">
+                            CINEMAHUB DEV STUDIO <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30">ROOT ACCESS</span>
+                        </h2>
+                        <p class="text-xs text-gray-400">Управление каталогом, мульти-добавление серий, импорт/экспорт JSON базы</p>
+                    </div>
+                </div>
+                <button onclick="toggleDevPanel()" class="w-9 h-9 rounded-xl bg-white/5 hover:bg-red-600 text-gray-300 hover:text-white flex items-center justify-center text-2xl font-bold transition">&times;</button>
+            </div>
+
+            <!-- Вкладки Dev Studio -->
+            <div class="flex border-b border-white/10 bg-[#0c0e14] px-6 gap-6 text-xs sm:text-sm font-bold">
+                <button onclick="switchDevTab('add')" id="tabBtn-add" class="py-3.5 border-b-2 border-red-600 text-white transition">+ Добавить сериал / фильм</button>
+                <button onclick="switchDevTab('manage')" id="tabBtn-manage" class="py-3.5 border-b-2 border-transparent text-gray-400 hover:text-white transition">База контента (<span id="devTabCount">0</span>)</button>
+                <button onclick="switchDevTab('system')" id="tabBtn-system" class="py-3.5 border-b-2 border-transparent text-gray-400 hover:text-white transition">JSON Экспорт / Настройки</button>
+            </div>
+
+            <div class="p-6 max-h-[75vh] overflow-y-auto">
+                <!-- Дашборд статистики (всегда сверху) -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                    <div class="bg-white/5 p-3.5 rounded-xl border border-white/5">
+                        <p class="text-[11px] text-gray-400 uppercase font-semibold">Тайтлов в базе</p>
+                        <p id="statTotal" class="text-2xl font-black mt-0.5 text-white">0</p>
+                    </div>
+                    <div class="bg-white/5 p-3.5 rounded-xl border border-white/5">
+                        <p class="text-[11px] text-gray-400 uppercase font-semibold">Всего серий</p>
+                        <p id="statEpisodes" class="text-2xl font-black mt-0.5 text-amber-400">0</p>
+                    </div>
+                    <div class="bg-white/5 p-3.5 rounded-xl border border-white/5">
+                        <p class="text-[11px] text-gray-400 uppercase font-semibold">Рекламный движок</p>
+                        <p class="text-xl font-black text-emerald-400 mt-1">OFF (0 банеров)</p>
+                    </div>
+                    <div class="bg-white/5 p-3.5 rounded-xl border border-white/5">
+                        <p class="text-[11px] text-gray-400 uppercase font-semibold">Память LocalStorage</p>
+                        <p id="statStorage" class="text-xl font-black text-blue-400 mt-1">0 KB</p>
+                    </div>
+                </div>
+
+                <!-- ВКЛАДКА 1: Добавление нового тайтла + Пакетные серии -->
+                <div id="devTab-add">
+                    <form id="addContentForm" onsubmit="addNewContent(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-black/30 p-5 rounded-2xl border border-white/10">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">Название сериала или фильма *</label>
+                            <input type="text" id="newTitle" required placeholder="Например: Бригада 2: Наследник" 
+                                class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:border-red-500 outline-none">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 mb-1.5">Тип *</label>
+                                <select id="newType" class="w-full bg-[#181b24] border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:border-red-500 outline-none">
+                                    <option value="Сериал">Сериал</option>
+                                    <option value="Фильм">Фильм</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 mb-1.5">Подборка / Категория *</label>
+                                <select id="newTag" class="w-full bg-[#181b24] border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:border-red-500 outline-none">
+                                    <option value="Лихие 90-е и Улица">🔥 Лихие 90-е и Улица</option>
+                                    <option value="Криминал и Бригады">🔫 Криминал и Авторитеты</option>
+                                    <option value="Драма и Жизнь">🎭 Драма и Жизнь</option>
+                                    <option value="Фантастика">🚀 Фантастика</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">Год и Жанры *</label>
+                            <input type="text" id="newMeta" required placeholder="1999 • Криминал, Драма, 90-е" 
+                                class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:border-red-500 outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">Рейтинг Кинопоиск / IMDb *</label>
+                            <input type="number" step="0.1" max="10" min="0" id="newRating" value="9.1" required
+                                class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:border-red-500 outline-none">
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">Ссылка на постер (URL картинки) *</label>
+                            <input type="url" id="newPoster" required placeholder="https://images.unsplash.com/..." 
+                                class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:border-red-500 outline-none">
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">Описание сюжета</label>
+                            <textarea id="newDesc" rows="2" placeholder="Короткое описание атмосферы сериала..." 
+                                class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-sm focus:border-red-500 outline-none"></textarea>
+                        </div>
+
+                        <!-- Динамический конструктор серий -->
+                        <div class="sm:col-span-2 bg-white/5 p-4 rounded-xl border border-white/10">
+                            <div class="flex items-center justify-between mb-3">
+                                <label class="text-xs font-bold uppercase text-amber-400">Список серий (Прямые ссылки .mp4)</label>
+                                <button type="button" onclick="addEpisodeInputRow()" class="text-xs bg-white/10 hover:bg-white/20 px-3 py-1 rounded-lg font-semibold transition">
+                                    + Добавить ещё серию
+                                </button>
+                            </div>
+                            <div id="episodeInputsContainer" class="space-y-2.5">
+                                <div class="flex gap-2 ep-input-row">
+                                    <input type="text" placeholder="Название (напр. Серия 1)" value="Серия 1" required class="ep-name w-1/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none focus:border-red-500">
+                                    <input type="url" placeholder="https://.../video.mp4" value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" required class="ep-url w-2/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none focus:border-red-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sm:col-span-2 flex justify-end gap-3 pt-2">
+                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-3 rounded-xl text-sm transition shadow-lg shadow-red-600/30">
+                                🚀 Опубликовать в кинотеатр
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- ВКЛАДКА 2: Управление существующей базой -->
+                <div id="devTab-manage" class="hidden space-y-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <input type="text" id="devSearchInput" oninput="renderDevList()" placeholder="Фильтр в админке..." class="bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs w-64 outline-none focus:border-red-500">
+                        <button onclick="resetDatabase()" class="text-xs bg-red-950/60 hover:bg-red-600 text-red-300 hover:text-white border border-red-500/30 px-3.5 py-2 rounded-xl transition">
+                            ♻️ Сбросить базу к заводской (16 тайтлов)
+                        </button>
+                    </div>
+                    <div id="devContentList" class="space-y-2"></div>
+                </div>
+
+                <!-- ВКЛАДКА 3: JSON Бэкап и Инструменты разраба -->
+                <div id="devTab-system" class="hidden space-y-4">
+                    <div class="bg-black/40 p-4 rounded-xl border border-white/10">
+                        <h4 class="text-sm font-bold mb-1">Экспорт / Импорт базы данных (JSON)</h4>
+                        <p class="text-xs text-gray-400 mb-3">Ты можешь скопировать весь код своей базы сериалов, сохранить в файл или перенести на другой компьютер.</p>
+                        <textarea id="jsonBox" rows="8" class="w-full bg-[#08090c] font-mono text-xs text-emerald-400 p-3 rounded-xl border border-white/10 outline-none"></textarea>
+                        <div class="flex flex-wrap gap-3 mt-3">
+                            <button onclick="exportJsonToBox()" class="bg-white/10 hover:bg-white/20 text-xs font-bold px-4 py-2 rounded-lg transition">📥 Выгрузить текущую базу в окно</button>
+                            <button onclick="importJsonFromBox()" class="bg-emerald-600 hover:bg-emerald-700 text-xs font-bold px-4 py-2 rounded-lg transition">📤 Загрузить базу из JSON</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Тестовые прямые видеопотоки без рекламы
+        const STREAMS = {
+            s1: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+            s2: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+            s3: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+            s4: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+            s5: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+        };
+
+        // Расширенная база: упор на 90-е, пацанские драмы, криминал и культовые хиты
+        const defaultMovies = [
+            {
+                id: 101,
+                title: "Слово Пацана: Кровь на Асфальте",
+                type: "Сериал",
+                tag: "Лихие 90-е и Улица",
+                meta: "2023 • Драма, Криминал, Конец 80-х",
+                rating: "9.5",
+                featured: true,
+                poster: "https://images.unsplash.com/photo-1657360952614-0f821bd8a873?fm=jpg&q=60&w=1000&auto=format&fit=crop",
+                desc: "Конец 1980-х. Пока родители борются за выживание в эпоху перемен, уличные группировки делят асфальт. История о братстве, цене данного слова и жестоких законах двора.",
+                episodes: [
+                    { name: "1 серия — Пацаны не извиняются", url: STREAMS.s1 },
+                    { name: "2 серия — Новый район", url: STREAMS.s2 },
+                    { name: "3 серия — Асфальт", url: STREAMS.s3 },
+                    { name: "4 серия — Слово старшего", url: STREAMS.s4 },
+                    { name: "5 серия — Чужие среди своих", url: STREAMS.s5 },
+                    { name: "6 серия — Точка невозврата", url: STREAMS.s1 },
+                    { name: "7 серия — Зима на районе", url: STREAMS.s2 },
+                    { name: "8 серия — Финал сезона", url: STREAMS.s3 }
+                ]
+            },
+            {
+                id: 102,
+                title: "Бригада",
+                type: "Сериал",
+                tag: "Лихие 90-е и Улица",
+                meta: "2002 • Криминал, Боевик, 90-е",
+                rating: "9.4",
+                poster: "https://images.unsplash.com/photo-1779093284694-598ba3ef4f97?fm=jpg&q=60&w=1000&auto=format&fit=crop",
+                desc: "История четырёх друзей детства — Саши Белого, Космоса, Пчёлы и Фила, которые решили немного подзаработать, но оказались втянуты в криминальную империю 90-х.",
+                episodes: [
+                    { name: "1 серия — Дембель 1989", url: STREAMS.s2 },
+                    { name: "2 серия — Первая стрелка", url: STREAMS.s3 },
+                    { name: "3 серия — Клятва на Воробьёвых", url: STREAMS.s1 },
+                    { name: "4 серия — Лихой 1993", url: STREAMS.s4 },
+                    { name: "5 серия — Война кланов", url: STREAMS.s5 }
+                ]
+            },
+            {
+                id: 103,
+                title: "Бумер",
+                type: "Фильм",
+                tag: "Лихие 90-е и Улица",
+                meta: "2003 • Криминал, Драма, Дорога",
+                rating: "9.0",
+                poster: "https://images.unsplash.com/photo-1620227275806-28acdc566203?fm=jpg&q=60&w=1000&auto=format&fit=crop",
+                desc: "Четверо друзей уходят от погони на чёрном BMW по бескрайним российским трассам начала нулевых. Никто из них не хотел убивать, но обратного пути нет.",
+                episodes: [
+                    { name: "Полный фильм (Режиссёрская версия)", url: STREAMS.s5 }
+                ]
+            },
+            {
+                id: 104,
+                title: "Жмурки",
+                type: "Фильм",
+                tag: "Лихие 90-е и Улица",
+                meta: "2005 • Криминал, Чёрная комедия, 90-е",
+                rating: "8.9",
+                poster: "https://images.unsplash.com/photo-1674013616938-1cc074a322d2?fm=jpg&q=60&w=1000&auto=format&fit=crop",
+                desc: "Середина 90-х, Нижний Новгород. Два бандюка в малиновом пиджаке и кожанке пытаются вернуть чемодан с товаром авторитету Михалычу.",
+                episodes: [
+                    { name: "Полный фильм HD", url: STREAMS.s4 }
+                ]
+            },
+            {
+                id: 105,
+                title: "Мир! Дружба! Жвачка!",
+                type: "Сериал",
+                tag: "Лихие 90-е и Улица",
+                meta: "2020 • Драма, Ностальгия, 1993 год",
+                rating: "9.1",
+                poster: "https://images.unsplash.com/photo-1631814722654-e64bf511d335?fm=jpg&q=60&w=1000&auto=format&fit=crop",
+                desc: "1993 год. Подростки с района ввязываются в разборки местных криминальных авторитетов и афганцев, пытаясь защитить своих близких и сохранить дружбу.",
+                episodes: [
+                    { name: "1 серия — Крыша", url: STREAMS.s1 },
+                    { name: "2 серия — Кавказцы и Афганцы", url: STREAMS.s3 },
+                    { name: "3 серия — Дядя Алик", url: STREAMS.s2 },
+                    { name: "4 серия — Разборка на заводе", url: STREAMS.s4 }
+                ]
+            },
+            {
+                id: 106,
+                title: "ЮЗЗЗ",
+                type: "Сериал",
+                tag: "Криминал и Бригады",
+                meta: "2022 • Криминал, Драма, Ростов",
+                rating: "8.8",
+                poster: "https://images.unsplash.com/photo-1628532128793-3aaf51f2e773?fm=jpg&q=60&w=1000&auto=format&fit=crop",
+                desc: "Юго-Западный район Ростова-на-Дону. Молодой программист Равиль, чтобы вырваться из нищеты и завоевать девушку, начинает работать курьером на местного авторитета.",
+                episodes: [
+                    { name: "1 серия — Юго-Запад", url: STREAMS.s3 },
+                    { name: "2 серия — Старый знакомый", url: STREAMS.s1 },
+                    { name: "3 серия — Большие деньги", url: STREAMS.s5 }
+                ]
+            },
+            {
+                id: 107,
+                title: "Чёрная Весна",
+                type: "Сериал",
+                tag: "Лихие 90-е и Улица",
+                meta: "2022 • Драма, Улица, Честь",
+                rating: "8.7",
+                poster: "https://images.unsplash.com/photo-1737399787798-8537ee981ca9?fm=jpg&q=60&w=1000&auto=format&fit=crop",
+                desc: "В небольшом приморском городке компания парней находит старые дуэльные пистолеты и возрождает закрытый клуб дуэлянтов, где каждый спор решается по законам чести.",
+                episodes: [
+                    { name: "1 серия — Дуэль", url: STREAMS.s4 },
+                    { name: "2 серия — Кодекс", url: STREAMS.s2 },
+                    { name: "3 серия — Выстрел", url: STREAMS.s1 }
+                ]
+            },
+            {
+                id: 108,
+                title: "Бандитский Петербург: Адвокат",
+                type: "Сериал",
+                tag: "Лихие 90-е и Улица",
+                meta: "2000 • Криминал, Детектив, 90-е",
+                rating: "9.3",
+                poster: "https://images.unsplash.com/photo-1555460409-17f91e229d47?fm=jpg&q=60&w=1000&auto=format&fit=crop",
+                desc: "Культовая сага о Питере 90-х. Два бывших друга по юрфаку оказываются по разные стороны баррикад в империи Антибиотика.",
+                episodes: [
+                    { name: "1 серия — Встреча", url: STREAMS.s1 },
+                    { name: "2 серия — Антибиотик", url: STREAMS.s4 },
+                    { name: "3 серия — Белые ночи", url: STREAMS.s2 },
+                    { name: "4 серия — Предательство", url: STREAMS.s5 }
+                ]
+            },
+            {
+                id: 109,
+                title: "Брат",
+                type: "Фильм",
+                tag: "Лихие 90-е и Улица",
+                meta: "1997 • Боевик, Драма, Культовое",
+                rating: "9.6",
+                poster: "https://images.unsplash.com/photo-1784663160181-1924f7b8ba67?fm=jpg&q=60&w=1000&auto=format&fit=crop",
+                desc: "Демобилизованный Данила Багров приезжает в Петербург 90-х к старшему брату, который оказывается наёмным киллером. В чём сила, брат?",
+                episodes: [
+                    { name: "Полный фильм (Отреставрированная версия)", url: STREAMS.s2 }
+                ]
+            },
+            {
+                id: 110,
+                title: "Брат 2",
+                type: "Фильм",
+                tag: "Лихие 90-е и Улица",
+                meta: "2000 • Боевик, Криминал",
+                rating: "9.5",
+                poster: "https://images.unsplash.com/photo-1693001942655-fc6f9ecb4701?fm=jpg&q=60&w=1000&auto=format&fit=crop",
+                desc: "Данила Багров отправляется в Чикаго, чтобы выручить брата своего погибшего боевого товарища и восстановить справедливость.",
+                episodes: [
+                    { name: "Полный фильм HD", url: STREAMS.s1 }
+                ]
+            },
+            {
+                id: 111,
+                title: "Лихие",
+                type: "Сериал",
+                tag: "Лихие 90-е и Улица",
+                meta: "2024 • Криминал, Драма, Дальний Восток",
+                rating: "8.9",
+                poster: "https://images.unsplash.com/photo-1720851104848-f7f628c0307d?fm=jpg&q=60&w=1000&auto=format&fit=crop",
+                desc: "История крупнейшей ОПГ Дальнего Востока 90-х годов глазами отца и сына, которые из простых егерей превратились в главных киллеров региона.",
+                episodes: [
+                    { name: "1 серия — Тайга", url: STREAMS.s3 },
+                    { name: "2 серия — Хабаровск 92", url: STREAMS.s5 },
+                    { name: "3 серия — Общак", url: STREAMS.s1 }
+                ]
+            },
+            {
+                id: 112,
+                title: "Решала",
+                type: "Фильм",
+                tag: "Криминал и Бригады",
+                meta: "2012 • Криминал, Драма, Сибирь",
+                rating: "8.6",
+                poster: "https://images.unsplash.com/photo-1705472418412-90527bcb3b29?fm=jpg&q=60&w=1000&auto=format&fit=crop",
+                desc: "Старший брат — успешный юрист, который решает любые вопросы в городе. Младший Каша постоянно влипает в криминальные истории, из которых его приходится вытаскивать.",
+                episodes: [
+                    { name: "Полный фильм", url: STREAMS.s4 }
+                ]
+            },
+            {
+                id: 113,
+                title: "Острые Козырьки",
+                type: "Сериал",
+                tag: "Криминал и Бригады",
+                meta: "2013 • Криминал, Драма, Банды",
+                rating: "9.2",
+                poster: "https://images.unsplash.com/photo-1732135560097-c05cb5f279bc?fm=jpg&q=60&w=1000&auto=format&fit=crop",
+                desc: "Бирмингем, 1920-е. Семья Шелби во главе с Томасом подминает под себя подпольный букмекерский бизнес и строит криминальную империю.",
+                episodes: [
+                    { name: "1 серия — Семья Шелби", url: STREAMS.s2 },
+                    { name: "2 серия — Скачки", url: STREAMS.s1 },
+                    { name: "3 серия — Инспектор", url: STREAMS.s3 }
+                ]
+            },
+            {
+                id: 114,
+                title: "Зона Комфорта",
+                type: "Сериал",
+                tag: "Криминал и Бригады",
+                meta: "2020 • Комедия, Криминал",
+                rating: "8.5",
+                poster: "https://images.unsplash.com/photo-1676377630356-d8e7acd02ead?fm=jpg&q=60&w=1000&auto=format&fit=crop",
+                desc: "Харизматичный глава теневого бизнеса из Мурманска попадает в норвежскую тюрьму со всеми удобствами и пытается рулить делами и семьёй по видеосвязи.",
+                episodes: [
+                    { name: "1 серия — Норвегия", url: STREAMS.s5 },
+                    { name: "2 серия — Решаем вопросы", url: STREAMS.s2 }
+                ]
+            },
+            {
+                id: 115,
+                title: "Клан Сопрано",
+                type: "Сериал",
+                tag: "Криминал и Бригады",
+                meta: "1999 • Криминал, Драма, Мафия",
+                rating: "9.4",
+                poster: "https://images.unsplash.com/photo-1768809249178-387eade56b6f?fm=jpg&q=60&w=1000&auto=format&fit=crop",
+                desc: "Босс мафии Северного Джерси Тони Сопрано пытается балансировать между жестокими разборками криминальной семьи и проблемами в собственном доме.",
+                episodes: [
+                    { name: "1 серия — Пилот", url: STREAMS.s1 },
+                    { name: "2 серия — 46-й размер", url: STREAMS.s4 }
+                ]
+            },
+            {
+                id: 116,
+                title: "Киберпанк: Неоновый Город",
+                type: "Сериал",
+                tag: "Фантастика",
+                meta: "2026 • Фантастика, Киберпанк",
+                rating: "9.1",
+                poster: "https://images.unsplash.com/photo-1649510795725-b5751da263c9?fm=jpg&q=60&w=1000&auto=format&fit=crop",
+                desc: "В мире будущего, где корпорации контролируют каждый шаг, группа уличных хакеров решает взломать главную систему безопасности мегаполиса.",
+                episodes: [
+                    { name: "1 серия — Пробуждение", url: STREAMS.s1 },
+                    { name: "2 серия — Взлом сети", url: STREAMS.s2 }
+                ]
+            }
+        ];
+
+        // Инициализация хранилищ
+        let movies = JSON.parse(localStorage.getItem('cinemahub_v2_db')) || defaultMovies;
+        let favorites = JSON.parse(localStorage.getItem('cinemahub_v2_fav')) || [];
+        let watchHistory = JSON.parse(localStorage.getItem('cinemahub_v2_history')) || [];
+        let currentCategory = 'all';
+        let currentPlayingMovie = null;
+
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const colors = type === 'success' ? 'bg-emerald-600 border-emerald-400/30' : 'bg-red-600 border-red-400/30';
+            toast.className = `${colors} text-white text-xs font-bold px-4 py-3 rounded-xl shadow-2xl border transition-all duration-300 transform translate-y-2 opacity-0`;
+            toast.textContent = msg;
+            container.appendChild(toast);
+            
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function saveDB() {
+            localStorage.setItem('cinemahub_v2_db', JSON.stringify(movies));
+            renderCatalog();
+            renderDevList();
+            updateDevStats();
+        }
+
+        function saveFavorites() {
+            localStorage.setItem('cinemahub_v2_fav', JSON.stringify(favorites));
+            document.getElementById('favCountBadge').textContent = favorites.length;
+            renderCatalog();
+        }
+
+        function toggleFavorite(id, e) {
+            if (e) e.stopPropagation();
+            if (favorites.includes(id)) {
+                favorites = favorites.filter(favId => favId !== id);
+                showToast('Удалено из избранного', 'info');
+            } else {
+                favorites.push(id);
+                showToast('Добавлено в избранное ❤️');
+            }
+            saveFavorites();
+        }
+
+        function toggleFeaturedFav() {
+            if (movies.length > 0) toggleFavorite(movies[0].id);
+        }
+
+        // Отрисовка каталога
+        function renderCatalog() {
+            const grid = document.getElementById('catalogGrid');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const sortBy = document.getElementById('sortSelect').value;
+            grid.innerHTML = '';
+
+            let filtered = movies.filter(item => {
+                let matchCat = true;
+                if (currentCategory === 'favorites') {
+                    matchCat = favorites.includes(item.id);
+                } else if (currentCategory === 'Сериал' || currentCategory === 'Фильм') {
+                    matchCat = item.type === currentCategory;
+                } else if (currentCategory !== 'all') {
+                    matchCat = item.tag === currentCategory;
+                }
+
+                const matchSearch = item.title.toLowerCase().includes(search) || 
+                                    item.meta.toLowerCase().includes(search) ||
+                                    (item.desc && item.desc.toLowerCase().includes(search));
+                return matchCat && matchSearch;
+            });
+
+            if (sortBy === 'rating') {
+                filtered.sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating));
+            } else if (sortBy === 'episodes') {
+                filtered.sort((a, b) => b.episodes.length - a.episodes.length);
+            }
+
+            document.getElementById('itemsCount').textContent = `Доступно: ${filtered.length}`;
+            document.getElementById('favCountBadge').textContent = favorites.length;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-16 text-gray-400">По вашему запросу ничего не найдено. Попробуйте сбросить фильтры.</div>`;
+                return;
+            }
+
+            filtered.forEach(movie => {
+                const isFav = favorites.includes(movie.id);
+                const card = document.createElement('div');
+                card.className = 'movie-card group cursor-pointer bg-[#12141c] rounded-2xl overflow-hidden border border-white/5 hover:border-red-500/40 relative flex flex-col';
+                card.onclick = () => openPlayer(movie);
+
+                card.innerHTML = `
+                    <div class="relative aspect-[2/3] overflow-hidden bg-gray-900">
+                        <img src="${movie.poster}" alt="${movie.title}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <div class="play-overlay opacity-0 transition duration-300 absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-center justify-center">
+                            <div class="w-14 h-14 rounded-full bg-red-600 flex items-center justify-center text-white text-2xl shadow-xl shadow-red-600/50 transform scale-90 group-hover:scale-100 transition">▶</div>
+                        </div>
+                        <span class="absolute top-2.5 left-2.5 bg-black/80 backdrop-blur-md text-xs font-extrabold px-2 py-0.5 rounded-md text-emerald-400 border border-white/10">
+                            ★ ${movie.rating}
+                        </span>
+                        <button onclick="toggleFavorite(${movie.id}, event)" title="В избранное" 
+                            class="absolute top-2.5 right-2.5 w-8 h-8 rounded-lg bg-black/70 hover:bg-red-600 backdrop-blur-md flex items-center justify-center text-xs transition border border-white/10">
+                            ${isFav ? '❤️' : '🤍'}
+                        </button>
+                        <div class="absolute bottom-2.5 left-2.5 right-2.5 flex justify-between items-center pointer-events-none">
+                            <span class="bg-red-600 text-[10px] font-black uppercase px-2 py-0.5 rounded shadow">
+                                ${movie.type} ${movie.episodes.length > 1 ? '• ' + movie.episodes.length + ' сер.' : ''}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-3.5 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-sm text-white line-clamp-1 group-hover:text-red-500 transition">${movie.title}</h3>
+                            <p class="text-[11px] text-gray-400 mt-1 line-clamp-1">${movie.meta}</p>
+                        </div>
+                        ${movie.tag ? `<span class="inline-block mt-2.5 text-[10px] font-semibold text-amber-400/90 bg-amber-400/10 px-2 py-0.5 rounded w-fit">${movie.tag}</span>` : ''}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterCategory(cat) {
+            currentCategory = cat;
+            const titles = {
+                'all': 'Все сериалы и фильмы',
+                'favorites': '❤️ Моё избранное',
+                'Сериал': '📺 Все сериалы',
+                'Фильм': '🎬 Все фильмы'
+            };
+            document.getElementById('catalogTitle').textContent = titles[cat] || `Подборка: ${cat}`;
+            renderCatalog();
+        }
+
+        function resetFilters() {
+            currentCategory = 'all';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('sortSelect').value = 'default';
+            filterCategory('all');
+        }
+
+        // История просмотров ("Продолжить просмотр")
+        function addToHistory(movie, epIndex) {
+            watchHistory = watchHistory.filter(h => h.id !== movie.id);
+            watchHistory.unshift({
+                id: movie.id,
+                title: movie.title,
+                poster: movie.poster,
+                epIndex: epIndex,
+                epName: movie.episodes[epIndex].name
+            });
+            if (watchHistory.length > 4) watchHistory.pop();
+            localStorage.setItem('cinemahub_v2_history', JSON.stringify(watchHistory));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const section = document.getElementById('continueSection');
+            const grid = document.getElementById('continueGrid');
+            if (watchHistory.length === 0) {
+                section.classList.add('hidden');
+                return;
+            }
+            section.classList.remove('hidden');
+            grid.innerHTML = '';
+
+            watchHistory.forEach(item => {
+                const movie = movies.find(m => m.id === item.id);
+                if (!movie) return;
+                const card = document.createElement('div');
+                card.className = 'flex items-center gap-3 bg-[#12141c] hover:bg-[#191c26] p-2.5 rounded-xl border border-white/10 cursor-pointer transition';
+                card.onclick = () => openPlayer(movie, item.epIndex);
+                card.innerHTML = `
+                    <img src="${movie.poster}" class="w-12 h-16 object-cover rounded-lg">
+                    <div class="overflow-hidden">
+                        <h4 class="text-xs font-bold truncate text-white">${movie.title}</h4>
+                        <p class="text-[11px] text-red-400 font-semibold truncate mt-0.5">▶ ${item.epName}</p>
+                        <div class="w-24 h-1 bg-white/10 rounded-full mt-2 overflow-hidden">
+                            <div class="w-2/3 h-full bg-red-600"></div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function clearHistory() {
+            watchHistory = [];
+            localStorage.removeItem('cinemahub_v2_history');
+            renderHistory();
+        }
+
+        // Плеер
+        function openPlayer(movie, startEpIndex = 0) {
+            currentPlayingMovie = movie;
+            const modal = document.getElementById('playerModal');
+            const video = document.getElementById('videoElement');
+            const epBar = document.getElementById('episodesBar');
+            const epList = document.getElementById('episodesList');
+
+            document.getElementById('playerTitle').textContent = movie.title;
+            document.getElementById('playerMeta').textContent = `${movie.type} • ${movie.meta} • ★ ${movie.rating}`;
+            document.getElementById('playerDesc').textContent = movie.desc || 'Приятного просмотра без рекламы в максимальном качестве!';
+            
+            const favBtn = document.getElementById('playerFavBtn');
+            favBtn.textContent = favorites.includes(movie.id) ? '❤️ В избранном' : '🤍 В избранное';
+            favBtn.onclick = () => {
+                toggleFavorite(movie.id);
+                favBtn.textContent = favorites.includes(movie.id) ? '❤️ В избранном' : '🤍 В избранное';
+            };
+
+            const activeEp = movie.episodes[startEpIndex] || movie.episodes[0];
+            video.src = activeEp.url;
+            video.play();
+            addToHistory(movie, startEpIndex);
+
+            epList.innerHTML = '';
+            if (movie.episodes.length > 1) {
+                epBar.classList.remove('hidden');
+                document.getElementById('currentEpIndicator').textContent = `Сейчас играет: ${activeEp.name}`;
+                
+                movie.episodes.forEach((ep, index) => {
+                    const btn = document.createElement('button');
+                    const isActive = index === startEpIndex;
+                    btn.className = `px-3.5 py-2 rounded-xl text-xs font-bold transition ${isActive ? 'bg-red-600 text-white shadow-lg shadow-red-600/30' : 'bg-white/5 text-gray-300 hover:bg-white/15 border border-white/5'}`;
+                    btn.textContent = ep.name;
+                    btn.onclick = () => {
+                        video.src = ep.url;
+                        video.play();
+                        addToHistory(movie, index);
+                        document.getElementById('currentEpIndicator').textContent = `Сейчас играет: ${ep.name}`;
+                        Array.from(epList.children).forEach(b => b.className = 'px-3.5 py-2 rounded-xl text-xs font-bold transition bg-white/5 text-gray-300 hover:bg-white/15 border border-white/5');
+                        btn.className = 'px-3.5 py-2 rounded-xl text-xs font-bold transition bg-red-600 text-white shadow-lg shadow-red-600/30';
+                    };
+                    epList.appendChild(btn);
+                });
+            } else {
+                epBar.classList.add('hidden');
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function playFeatured() {
+            if (movies.length > 0) openPlayer(movies[0], 0);
+        }
+
+        function closePlayer() {
+            const modal = document.getElementById('playerModal');
+            const video = document.getElementById('videoElement');
+            video.pause();
+            video.src = '';
+            modal.classList.add('hidden');
+        }
+
+        // ================= DEV STUDIO PRO =================
+        function toggleDevPanel() {
+            const modal = document.getElementById('devModal');
+            modal.classList.toggle('hidden');
+            updateDevStats();
+            renderDevList();
+        }
+
+        function switchDevTab(tabName) {
+            ['add', 'manage', 'system'].forEach(t => {
+                document.getElementById(`devTab-${t}`).classList.add('hidden');
+                const btn = document.getElementById(`tabBtn-${t}`);
+                btn.classList.remove('border-red-600', 'text-white');
+                btn.classList.add('border-transparent', 'text-gray-400');
+            });
+            document.getElementById(`devTab-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tabBtn-${tabName}`);
+            activeBtn.classList.add('border-red-600', 'text-white');
+            activeBtn.classList.remove('border-transparent', 'text-gray-400');
+            
+            if (tabName === 'system') exportJsonToBox();
+        }
+
+        function updateDevStats() {
+            document.getElementById('statTotal').textContent = movies.length;
+            document.getElementById('devTabCount').textContent = movies.length;
+            const totalEps = movies.reduce((acc, m) => acc + m.episodes.length, 0);
+            document.getElementById('statEpisodes').textContent = totalEps;
+            const kb = (new Blob([JSON.stringify(movies)]).size / 1024).toFixed(1);
+            document.getElementById('statStorage').textContent = `${kb} KB`;
+        }
+
+        function addEpisodeInputRow() {
+            const container = document.getElementById('episodeInputsContainer');
+            const count = container.children.length + 1;
+            const row = document.createElement('div');
+            row.className = 'flex gap-2 ep-input-row';
+            row.innerHTML = `
+                <input type="text" placeholder="Серия ${count}" value="Серия ${count}" required class="ep-name w-1/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none focus:border-red-500">
+                <input type="url" placeholder="https://.../video.mp4" value="${STREAMS.s1}" required class="ep-url w-2/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none focus:border-red-500">
+                <button type="button" onclick="this.parentElement.remove()" class="px-2.5 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white rounded-lg text-xs font-bold transition">&times;</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function addNewContent(e) {
+            e.preventDefault();
+            const epRows = document.querySelectorAll('.ep-input-row');
+            const episodes = [];
+            epRows.forEach(row => {
+                const name = row.querySelector('.ep-name').value.trim();
+                const url = row.querySelector('.ep-url').value.trim();
+                if (name && url) episodes.push({ name, url });
+            });
+
+            const newItem = {
+                id: Date.now(),
+                title: document.getElementById('newTitle').value,
+                type: document.getElementById('newType').value,
+                tag: document.getElementById('newTag').value,
+                meta: document.getElementById('newMeta').value,
+                rating: document.getElementById('newRating').value,
+                poster: document.getElementById('newPoster').value,
+                desc: document.getElementById('newDesc').value,
+                episodes: episodes.length ? episodes : [{ name: "Серия 1", url: STREAMS.s1 }]
+            };
+
+            movies.unshift(newItem);
+            saveDB();
+            e.target.reset();
+            // Сбросить строки серий до 1
+            document.getElementById('episodeInputsContainer').innerHTML = `
+                <div class="flex gap-2 ep-input-row">
+                    <input type="text" value="Серия 1" required class="ep-name w-1/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none">
+                    <input type="url" value="${STREAMS.s1}" required class="ep-url w-2/3 bg-[#12141c] border border-white/10 rounded-lg px-3 py-2 text-xs outline-none">
+                </div>
+            `;
+            showToast(`«${newItem.title}» успешно добавлен на главную!`);
+        }
+
+        function renderDevList() {
+            const list = document.getElementById('devContentList');
+            const query = (document.getElementById('devSearchInput')?.value || '').toLowerCase();
+            list.innerHTML = '';
+
+            movies.filter(m => m.title.toLowerCase().includes(query)).forEach(movie => {
+                const row = document.createElement('div');
+                row.className = 'flex flex-wrap items-center justify-between gap-3 bg-white/5 px-4 py-3 rounded-xl border border-white/5 hover:border-white/15 transition';
+                row.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <img src="${movie.poster}" class="w-10 h-14 object-cover rounded-lg">
+                        <div>
+                            <p class="text-sm font-bold text-white">${movie.title} <span class="text-xs font-normal text-amber-400">[${movie.tag || movie.type}]</span></p>
+                            <p class="text-xs text-gray-400">Рейтинг: ★ ${movie.rating} • Серий: ${movie.episodes.length} • ID: ${movie.id}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="quickAddEpisode(${movie.id})" class="text-xs bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white px-3 py-1.5 rounded-lg font-semibold transition">
+                            +1 Серия
+                        </button>
+                        <button onclick="makeHero(${movie.id})" class="text-xs bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white px-3 py-1.5 rounded-lg font-semibold transition">
+                            На баннер
+                        </button>
+                        <button onclick="deleteContent(${movie.id})" class="text-xs bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-3 py-1.5 rounded-lg font-semibold transition">
+                            Удалить
+                        </button>
+                    </div>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        function quickAddEpisode(id) {
+            const movie = movies.find(m => m.id === id);
+            if (!movie) return;
+            const nextNum = movie.episodes.length + 1;
+            movie.episodes.push({ name: `${nextNum} серия`, url: STREAMS.s2 });
+            saveDB();
+            showToast(`Добавлена ${nextNum} серия в «${movie.title}»`);
+        }
+
+        function makeHero(id) {
+            const idx = movies.findIndex(m => m.id === id);
+            if (idx === -1) return;
+            const [selected] = movies.splice(idx, 1);
+            movies.unshift(selected);
+            saveDB();
+            updateHeroBanner();
+            showToast(`«${selected.title}» теперь на главном баннере!`);
+        }
+
+        function updateHeroBanner() {
+            if (movies.length === 0) return;
+            const top = movies[0];
+            document.getElementById('heroBg').src = top.poster;
+            document.getElementById('heroTitle').textContent = top.title;
+            document.getElementById('heroDesc').textContent = top.desc || top.meta;
+            document.getElementById('heroRatingBadge').textContent = `★ ${top.rating}`;
+        }
+
+        function deleteContent(id) {
+            movies = movies.filter(m => m.id !== id);
+            saveDB();
+            updateHeroBanner();
+            showToast('Тайтл удалён из базы', 'error');
+        }
+
+        function resetDatabase() {
+            movies = JSON.parse(JSON.stringify(defaultMovies));
+            saveDB();
+            updateHeroBanner();
+            showToast('База восстановлена (16 культовых тайтлов)');
+        }
+
+        function exportJsonToBox() {
+            document.getElementById('jsonBox').value = JSON.stringify(movies, null, 2);
+        }
+
+        function importJsonFromBox() {
+            try {
+                const parsed = JSON.parse(document.getElementById('jsonBox').value);
+                if (Array.isArray(parsed)) {
+                    movies = parsed;
+                    saveDB();
+                    updateHeroBanner();
+                    showToast('База успешно импортирована из JSON!');
+                } else {
+                    showToast('Ошибка: нужен массив объектов JSON', 'error');
+                }
+            } catch (err) {
+                showToast('Ошибка синтаксиса JSON!', 'error');
+            }
+        }
+
+        // Запуск при загрузке
+        updateHeroBanner();
+        renderCatalog();
+        renderHistory();
+        updateDevStats();
+    </script>
+</body>
+</html>
